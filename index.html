@@ -90,6 +90,18 @@
     .url{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:.78rem}
     .arrow{display:grid;place-items:center;flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);font-size:1.1rem}
 
+    .mirrors{margin-top:2px}
+    .mirrors summary{
+      list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;
+      min-height:46px;padding:10px 13px;cursor:pointer;color:var(--muted);font-size:.78rem;font-weight:760;
+      border:1px dashed color-mix(in srgb,var(--accent) 24%,var(--border));border-radius:16px;
+      background:color-mix(in srgb,var(--accent) 4%,transparent);-webkit-tap-highlight-color:transparent;
+    }
+    .mirrors summary::-webkit-details-marker{display:none}
+    .mirrors summary::after{content:"⌄";font-size:1rem;color:var(--accent);transition:transform .18s ease}
+    .mirrors[open] summary::after{transform:rotate(180deg)}
+    .mirror-list{display:grid;gap:10px;padding-top:10px}
+
     footer{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:24px;padding:13px 5px 0;color:var(--muted);font-size:.74rem}
     footer a{color:inherit;text-decoration:none;font-weight:700}
 
@@ -101,12 +113,13 @@
       .priority-star{top:21px;right:21px}
     }
     @media (min-width:980px){
-      .grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+      .grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}
       .project{width:100%}
     }
     @media (hover:hover) and (pointer:fine){
       .project{transition:transform .24s ease,box-shadow .24s ease}.project:hover{transform:translateY(-3px);box-shadow:0 24px 72px rgba(33,57,116,.19)}
       .deploy:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 36%,var(--border));background:color-mix(in srgb,var(--accent) 7%,var(--surface2))}
+      .mirrors summary:hover{color:var(--text);border-color:color-mix(in srgb,var(--accent) 38%,var(--border))}
     }
     @media (prefers-reduced-motion:no-preference){
       .project{animation:rise .58s cubic-bezier(.2,.76,.28,1) both}.project:nth-child(2){animation-delay:.07s}.project:nth-child(3){animation-delay:.14s}
@@ -130,7 +143,12 @@
         </div>
         <div class="links">
           <a class="deploy" href="https://bo2026.vercel.app/" target="_blank" rel="noopener"><span class="host">V</span><span class="deploy-text"><span class="deploy-label">Vercel <span class="badge">Primary</span></span><span class="url">bo2026.vercel.app</span></span><span class="arrow" aria-hidden="true">↗</span></a>
-          <a class="deploy" href="https://dev-bo2026.onrender.com/" target="_blank" rel="noopener"><span class="host">R</span><span class="deploy-text"><span class="deploy-label">Render <span class="badge">Mirror</span></span><span class="url">dev-bo2026.onrender.com</span></span><span class="arrow" aria-hidden="true">↗</span></a>
+          <details class="mirrors">
+            <summary>Mirrors</summary>
+            <div class="mirror-list">
+              <a class="deploy" href="https://dev-bo2026.onrender.com/" target="_blank" rel="noopener"><span class="host">R</span><span class="deploy-text"><span class="deploy-label">Render <span class="badge">Mirror</span></span><span class="url">dev-bo2026.onrender.com</span></span><span class="arrow" aria-hidden="true">↗</span></a>
+            </div>
+          </details>
         </div>
       </article>
 
@@ -141,8 +159,13 @@
         </div>
         <div class="links">
           <a class="deploy" href="https://ib2026.vercel.app/" target="_blank" rel="noopener"><span class="host">V</span><span class="deploy-text"><span class="deploy-label">Vercel <span class="badge">Primary</span></span><span class="url">ib2026.vercel.app</span></span><span class="arrow" aria-hidden="true">↗</span></a>
-          <a class="deploy" href="https://dev-ib2026.onrender.com/" target="_blank" rel="noopener"><span class="host">R</span><span class="deploy-text"><span class="deploy-label">Render <span class="badge">Dev mirror</span></span><span class="url">dev-ib2026.onrender.com</span></span><span class="arrow" aria-hidden="true">↗</span></a>
-          <a class="deploy" href="https://modebrecht.github.io/ib2026/" target="_blank" rel="noopener"><span class="host">GH</span><span class="deploy-text"><span class="deploy-label">GitHub Pages <span class="badge">Mirror</span></span><span class="url">modebrecht.github.io/ib2026</span></span><span class="arrow" aria-hidden="true">↗</span></a>
+          <details class="mirrors">
+            <summary>Mirrors</summary>
+            <div class="mirror-list">
+              <a class="deploy" href="https://dev-ib2026.onrender.com/" target="_blank" rel="noopener"><span class="host">R</span><span class="deploy-text"><span class="deploy-label">Render <span class="badge">Dev mirror</span></span><span class="url">dev-ib2026.onrender.com</span></span><span class="arrow" aria-hidden="true">↗</span></a>
+              <a class="deploy" href="https://modebrecht.github.io/ib2026/" target="_blank" rel="noopener"><span class="host">GH</span><span class="deploy-text"><span class="deploy-label">GitHub Pages <span class="badge">Mirror</span></span><span class="url">modebrecht.github.io/ib2026</span></span><span class="arrow" aria-hidden="true">↗</span></a>
+            </div>
+          </details>
         </div>
       </article>
 
