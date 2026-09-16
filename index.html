@@ -86,35 +86,42 @@
       max-width:700px;
       margin:0 auto;
       padding:26px 0 30px;
-      text-align:left;
+      text-align:center;
     }
     h1{
+      display:inline-flex;
+      flex-direction:column;
+      align-items:flex-start;
+      max-width:100%;
       margin:0;
-      line-height:1;
+      text-align:left;
+      line-height:1.08;
       letter-spacing:-.045em;
       font-weight:880;
+      overflow:visible;
     }
     .title-white{
       display:block;
       color:#fff;
       font-size:clamp(3rem,8.6vw,5.15rem);
-      line-height:.96;
+      line-height:1;
     }
     .title-row{
       display:flex;
       align-items:flex-end;
       justify-content:flex-start;
       gap:clamp(9px,1.8vw,16px);
-      margin-top:.04em;
+      margin-top:.02em;
       white-space:nowrap;
       overflow:visible;
     }
     .title-gradient{
-      display:block;
+      display:inline-block;
       color:transparent;
       font-size:clamp(2.85rem,8.1vw,4.9rem);
-      line-height:1.04;
-      padding-bottom:.08em;
+      line-height:1.16;
+      padding:0 .03em .18em 0;
+      margin-bottom:-.12em;
       background:linear-gradient(105deg,var(--blue) 4%,var(--cyan) 48%,var(--green) 96%);
       -webkit-background-clip:text;
       background-clip:text;
@@ -125,7 +132,7 @@
       align-items:center;
       justify-content:center;
       flex:0 0 auto;
-      margin-bottom:.18em;
+      margin-bottom:.24em;
       min-height:31px;
       padding:5px 11px;
       border:1px solid var(--border);
@@ -388,9 +395,9 @@
 
     @media (max-width:420px){
       .title-white{font-size:clamp(2.7rem,13vw,3.45rem)}
-      .title-gradient{font-size:clamp(2.28rem,10.8vw,2.9rem)}
+      .title-gradient{font-size:clamp(2.28rem,10.8vw,2.9rem);padding-bottom:.2em;margin-bottom:-.13em}
       .title-row{gap:7px}
-      .year{padding:4px 8px;min-height:27px;font-size:.6rem}
+      .year{padding:4px 8px;min-height:27px;font-size:.6rem;margin-bottom:.3em}
     }
 
     @media (hover:hover) and (pointer:fine){
