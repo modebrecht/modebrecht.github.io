@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Extract Vercel and Render recovery scripts
+      - name: Build unified recovery source
         shell: pwsh
         run: |
           @'
@@ -44,29 +44,89 @@ jobs:
               raise SystemExit('Embedded recoveryPython script not found')
 
           base = match.group(1).lstrip()
-          marker = 'HOST="bo2026.vercel.app"; ORIGIN="https://bo2026.vercel.app"; KIND="cv-cover-charm-dossier"; VERSION=1'
-          if marker not in base:
+          target_marker = 'HOST="bo2026.vercel.app"; ORIGIN="https://bo2026.vercel.app"; KIND="cv-cover-charm-dossier"; VERSION=1'
+          out_marker = 'OUT=DESKTOP/f"BO2026-Recovery-{STAMP}"'
+          if target_marker not in base:
               raise SystemExit('Recovery target marker not found')
+          if out_marker not in base:
+              raise SystemExit('Recovery output marker not found')
 
-          targets = {
-              'Vercel': ('bo2026.vercel.app', 'https://bo2026.vercel.app'),
-              'Render': ('dev-bo2026.onrender.com', 'https://dev-bo2026.onrender.com'),
-          }
+          wrapper = f'''from __future__ import annotations
+          import sys
 
-          outdir = Path('build-src')
-          outdir.mkdir(parents=True, exist_ok=True)
-          for name, (host, origin) in targets.items():
-              script = base.replace(
-                  marker,
-                  f'HOST="{host}"; ORIGIN="{origin}"; KIND="cv-cover-charm-dossier"; VERSION=1',
+          BASE_SOURCE = {base!r}
+          TARGET_MARKER = {target_marker!r}
+          OUT_MARKER = {out_marker!r}
+          TARGETS = {{
+              "1": ("Vercel", "bo2026.vercel.app", "https://bo2026.vercel.app"),
+              "2": ("Render", "dev-bo2026.onrender.com", "https://dev-bo2026.onrender.com"),
+          }}
+
+          def run_target(label, host, origin):
+              print("\\n" + "=" * 64)
+              print(f"BO2026 Recovery: {{label}}")
+              print(f"Quelle: {{origin}}")
+              print("=" * 64)
+              replacement = f'HOST="{{host}}"; ORIGIN="{{origin}}"; KIND="cv-cover-charm-dossier"; VERSION=1'
+              source = BASE_SOURCE.replace(TARGET_MARKER, replacement, 1)
+              source = source.replace(
+                  OUT_MARKER,
+                  f'OUT=DESKTOP/f"BO2026-Recovery-{{label}}-{{{{STAMP}}}}"',
                   1,
               )
-              out = outdir / f'bo2026_recover_{name.lower()}.py'
-              out.write_text(script, encoding='utf-8')
-              compile(script, str(out), 'exec')
-              print(f'Prepared {out} for {origin}')
-          '@ | Set-Content -Encoding UTF8 extract_recovery.py
-          py extract_recovery.py
+              namespace = {{"__name__": f"bo2026_recovery_{{label.lower()}}"}}
+              exec(compile(source, f"<bo2026-recovery-{{label.lower()}}>", "exec"), namespace)
+              namespace["main"]()
+
+          def choose_targets():
+              print("BO2026 Emergency Recovery")
+              print("-------------------------")
+              print("Welche Browserdaten sollen gerettet werden?")
+              print("  1  Vercel  - bo2026.vercel.app")
+              print("  2  Render  - dev-bo2026.onrender.com")
+              print("  3  Beide durchsuchen")
+              print("\\nEnter ohne Eingabe = Beide (empfohlen)")
+              try:
+                  choice = input("Auswahl [3]: ").strip()
+              except (EOFError, KeyboardInterrupt):
+                  choice = "3"
+              if choice == "1":
+                  return [TARGETS["1"]]
+              if choice == "2":
+                  return [TARGETS["2"]]
+              return [TARGETS["1"], TARGETS["2"]]
+
+          def main():
+              selected = choose_targets()
+              for target in selected:
+                  try:
+                      run_target(*target)
+                  except Exception as exc:
+                      print(f"\\nFEHLER bei {{target[0]}}: {{exc}}")
+              print("\\n" + "=" * 64)
+              print("Recovery abgeschlossen.")
+              print("Pruefe auf dem Desktop die BO2026-Recovery-* Ordner.")
+              print("=" * 64)
+              if sys.stdin.isatty():
+                  try:
+                      input("Enter zum Schliessen ...")
+                  except (EOFError, KeyboardInterrupt):
+                      pass
+
+          if __name__ == "__main__":
+              main()
+          '''
+
+          # Remove indentation introduced by the YAML heredoc.
+          import textwrap
+          wrapper = textwrap.dedent(wrapper)
+          out = Path('build-src/bo2026_recover_windows.py')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(wrapper, encoding='utf-8')
+          compile(wrapper, str(out), 'exec')
+          print(f'Prepared unified source: {out}')
+          '@ | Set-Content -Encoding UTF8 prepare_recovery.py
+          py prepare_recovery.py
 
       - name: Install build dependencies
         shell: pwsh
@@ -74,42 +134,44 @@ jobs:
           py -m pip install --upgrade pip
           py -m pip install pyinstaller python-snappy "git+https://github.com/cclgroupltd/ccl_chromium_reader.git@ef840de30221c4d65bc96d2f4d9057e9ef2f526d"
 
-      - name: Build standalone Windows executables
+      - name: Build standalone Windows executable
         shell: pwsh
         run: |
-          py -m PyInstaller --noconfirm --clean --onefile --console --name BO2026-Recovery-Vercel-Windows --collect-all ccl_chromium_reader --hidden-import snappy build-src/bo2026_recover_vercel.py
-          py -m PyInstaller --noconfirm --clean --onefile --console --name BO2026-Recovery-Render-Windows --collect-all ccl_chromium_reader --hidden-import snappy build-src/bo2026_recover_render.py
+          py -m PyInstaller `
+            --noconfirm `
+            --clean `
+            --onefile `
+            --console `
+            --name BO2026-Recovery-Windows `
+            --collect-all ccl_chromium_reader `
+            --hidden-import snappy `
+            build-src/bo2026_recover_windows.py
 
-      - name: Smoke-test executables
+      - name: Smoke-test executable
         shell: pwsh
         run: |
-          & .\dist\BO2026-Recovery-Vercel-Windows.exe
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          & .\dist\BO2026-Recovery-Render-Windows.exe
+          # CI has no interactive stdin; the EXE must default to "Both" and exit cleanly.
+          & .\dist\BO2026-Recovery-Windows.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Create SHA-256 checksums
+      - name: Create SHA-256 checksum
         shell: pwsh
         run: |
-          foreach ($name in @('Vercel','Render')) {
-            $file = ".\dist\BO2026-Recovery-$name-Windows.exe"
-            $hash = (Get-FileHash $file -Algorithm SHA256).Hash.ToLower()
-            "$hash  BO2026-Recovery-$name-Windows.exe" | Set-Content -Encoding ASCII "$file.sha256"
-            Write-Host "$name SHA256: $hash"
-          }
+          $file = '.\dist\BO2026-Recovery-Windows.exe'
+          $hash = (Get-FileHash $file -Algorithm SHA256).Hash.ToLower()
+          "$hash  BO2026-Recovery-Windows.exe" | Set-Content -Encoding ASCII "$file.sha256"
+          Write-Host "SHA256: $hash"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: BO2026-Recovery-Windows
           path: |
-            dist/BO2026-Recovery-Vercel-Windows.exe
-            dist/BO2026-Recovery-Vercel-Windows.exe.sha256
-            dist/BO2026-Recovery-Render-Windows.exe
-            dist/BO2026-Recovery-Render-Windows.exe.sha256
+            dist/BO2026-Recovery-Windows.exe
+            dist/BO2026-Recovery-Windows.exe.sha256
           if-no-files-found: error
 
-      - name: Publish stable GitHub Release assets
+      - name: Publish stable GitHub Release asset
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -117,12 +179,21 @@ jobs:
           $tag = 'bo2026-recovery-latest'
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
           if ($LASTEXITCODE -ne 0) {
-            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title 'BO2026 Recovery – Windows' --notes 'Standalone Windows x64 emergency recovery tools for BO2026 Vercel and Render origins. Read-only browser profile recovery.' --latest
+            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title 'BO2026 Recovery – Windows' --notes 'One BO2026 Windows recovery tool. Choose Vercel, Render, or both at startup. Read-only browser profile recovery.' --latest
           }
+
+          # Remove the previous split assets so the release stays understandable.
+          foreach ($asset in @(
+            'BO2026-Recovery-Vercel-Windows.exe',
+            'BO2026-Recovery-Vercel-Windows.exe.sha256',
+            'BO2026-Recovery-Render-Windows.exe',
+            'BO2026-Recovery-Render-Windows.exe.sha256'
+          )) {
+            gh release delete-asset $tag $asset --repo $env:GITHUB_REPOSITORY --yes 2>$null
+          }
+
           gh release upload $tag `
-            .\dist\BO2026-Recovery-Vercel-Windows.exe `
-            .\dist\BO2026-Recovery-Vercel-Windows.exe.sha256 `
-            .\dist\BO2026-Recovery-Render-Windows.exe `
-            .\dist\BO2026-Recovery-Render-Windows.exe.sha256 `
+            .\dist\BO2026-Recovery-Windows.exe `
+            .\dist\BO2026-Recovery-Windows.exe.sha256 `
             --repo $env:GITHUB_REPOSITORY `
             --clobber
