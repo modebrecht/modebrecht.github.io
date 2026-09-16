@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b1020">
   <meta name="description" content="Berufliche Orientierung — Links und Ressourcen.">
-  <title>Modebrecht · Project Hub</title>
+  <title>GSU · Berufliche Orientierung 2026</title>
   <style>
     :root {
       color-scheme: light dark;
@@ -68,7 +68,6 @@
     .project h2{margin:1px 0 4px;font-size:1.26rem;letter-spacing:-.03em}
     .project p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.45}
 
-
     .links{display:grid;gap:10px;padding:2px 12px 12px}
     .deploy{
       display:flex;align-items:center;gap:12px;min-height:68px;padding:12px 13px 12px 14px;text-decoration:none;
@@ -104,10 +103,7 @@
     .resource-link{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:8px 11px;border:1px solid color-mix(in srgb,var(--accent) 15%,var(--border));border-radius:999px;color:var(--text);text-decoration:none;background:color-mix(in srgb,var(--surface2) 72%,transparent);font-size:.8rem;font-weight:700;-webkit-tap-highlight-color:transparent;transition:background .18s ease,border-color .18s ease,transform .18s ease}
     .resource-link span:last-child{color:var(--accent);font-size:.88rem}
 
-    footer{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;max-width:620px;margin:34px 0 0;padding:18px 6px 0;color:var(--muted);font-size:.74rem;text-align:center}
-    footer>span{font-weight:760;letter-spacing:.07em}
-    .footer-links{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-    footer a{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:6px 11px;border:1px solid var(--border);border-radius:999px;color:inherit;text-decoration:none;font-weight:760;background:color-mix(in srgb,var(--surface2) 56%,transparent);transition:color .18s ease,border-color .18s ease,background .18s ease,transform .18s ease}
+    footer{display:flex;align-items:center;justify-content:center;max-width:620px;margin:34px 0 0;padding:18px 6px 0;color:var(--muted);font-size:.74rem;text-align:center;font-weight:760;letter-spacing:.07em}
 
     @media (min-width:700px){
       .shell{padding-inline:28px}.hero{padding-top:42px;padding-bottom:42px}
@@ -124,7 +120,6 @@
       .deploy:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 36%,var(--border));background:color-mix(in srgb,var(--accent) 7%,var(--surface2))}
       .mirrors summary:hover{color:var(--text);border-color:color-mix(in srgb,var(--accent) 38%,var(--border))}
       .resource-link:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 34%,var(--border));background:color-mix(in srgb,var(--accent) 7%,var(--surface2))}
-      footer a:hover{transform:translateY(-1px);color:var(--text);border-color:color-mix(in srgb,var(--blue) 28%,var(--border));background:color-mix(in srgb,var(--blue) 6%,var(--surface2))}
     }
     @media (prefers-reduced-motion:no-preference){
       .project{animation:rise .58s cubic-bezier(.2,.76,.28,1) both}.project:nth-child(2){animation-delay:.07s}
@@ -136,9 +131,9 @@
   <main class="shell">
     <header class="hero">
       <h1>GSU<br><span class="gradient">Berufliche Orientierung 2026</span></h1>
-          </header>
+    </header>
 
-    <section class="grid" aria-label="Project links">
+    <section class="grid" aria-label="BO links">
       <article class="project bo">
         <div class="project-head">
           <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7V5.8A2.8 2.8 0 0 1 10.8 3h2.4A2.8 2.8 0 0 1 16 5.8V7"/><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M3 12h18M9 12v2h6v-2"/></svg></div>
@@ -191,13 +186,7 @@
       </article>
     </section>
 
-    <footer>
-      <span>© GSU</span>
-      <div class="footer-links">
-        <a href="https://ib2026.vercel.app/" target="_blank" rel="noopener">IB</a>
-        <a href="https://wah2026.vercel.app/" target="_blank" rel="noopener">WAH</a>
-      </div>
-    </footer>
+    <footer>© GSU</footer>
   </main>
 </body>
 </html>
