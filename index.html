@@ -1,151 +1,450 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b1020">
-  <meta name="description" content="Berufliche Orientierung — Links und Ressourcen.">
+  <meta name="theme-color" content="#08101f">
+  <meta name="description" content="Berufliche Orientierung — Bewerbungsdossier, Links und Ressourcen.">
   <title>GSU · Berufliche Orientierung 2026</title>
   <style>
-    :root {
-      color-scheme: light dark;
-      --bg:#eef3ff; --bg2:#f9fbff; --surface:rgba(255,255,255,.78);
-      --surface2:rgba(255,255,255,.95); --text:#11182a; --muted:#69748d;
-      --border:rgba(31,50,93,.10); --shadow:0 18px 54px rgba(33,57,116,.12);
-      --blue:#5668ff; --cyan:#25a9d6; --orange:#e88934; --green:#22a56f;
-      --radius:28px; --radius-sm:20px;
+    :root{
+      color-scheme:light dark;
+      --bg:#eef3ff;
+      --bg2:#f9fbff;
+      --surface:rgba(255,255,255,.82);
+      --surface-strong:rgba(255,255,255,.96);
+      --text:#11182a;
+      --headline:#11182a;
+      --muted:#69748d;
+      --border:rgba(31,50,93,.11);
+      --shadow:0 18px 54px rgba(33,57,116,.12);
+      --blue:#6578ff;
+      --cyan:#2bb9e7;
+      --green:#34cf92;
+      --radius:26px;
+      --radius-sm:18px;
     }
+
     @media (prefers-color-scheme:dark){
       :root{
-        --bg:#08101f; --bg2:#101a2f; --surface:rgba(18,28,49,.76);
-        --surface2:rgba(22,34,58,.95); --text:#f5f7ff; --muted:#9ba8c3;
-        --border:rgba(255,255,255,.09); --shadow:0 18px 54px rgba(0,0,0,.28);
-        --blue:#8290ff; --cyan:#52c9ee; --orange:#ffad61; --green:#4bd69a;
+        --bg:#08101f;
+        --bg2:#0d1930;
+        --surface:rgba(17,27,49,.80);
+        --surface-strong:rgba(22,34,58,.96);
+        --text:#f5f7ff;
+        --headline:#ffffff;
+        --muted:#9ba8c3;
+        --border:rgba(255,255,255,.09);
+        --shadow:0 20px 60px rgba(0,0,0,.28);
+        --blue:#8190ff;
+        --cyan:#54c9ee;
+        --green:#48d79d;
       }
     }
+
     *{box-sizing:border-box}
     html{background:var(--bg);-webkit-text-size-adjust:100%}
     body{
-      margin:0; min-height:100svh; overflow-x:hidden;
+      margin:0;
+      min-height:100svh;
+      overflow-x:hidden;
       font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       color:var(--text);
       background:
-        radial-gradient(circle at 8% 10%,color-mix(in srgb,var(--blue) 22%,transparent) 0 12%,transparent 34%),
-        radial-gradient(circle at 92% 16%,color-mix(in srgb,var(--cyan) 20%,transparent) 0 12%,transparent 36%),
-        radial-gradient(circle at 45% 96%,color-mix(in srgb,var(--green) 14%,transparent) 0 10%,transparent 34%),
-        linear-gradient(160deg,var(--bg),var(--bg2));
+        radial-gradient(circle at 10% 8%,color-mix(in srgb,var(--blue) 23%,transparent),transparent 31%),
+        radial-gradient(circle at 91% 14%,color-mix(in srgb,var(--cyan) 16%,transparent),transparent 34%),
+        radial-gradient(circle at 50% 100%,color-mix(in srgb,var(--green) 10%,transparent),transparent 30%),
+        linear-gradient(155deg,var(--bg),var(--bg2));
     }
     body::before{
-      content:"";position:fixed;inset:0;pointer-events:none;opacity:.26;
-      background-image:linear-gradient(rgba(127,143,180,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(127,143,180,.08) 1px,transparent 1px);
-      background-size:42px 42px;mask-image:linear-gradient(to bottom,black,transparent 74%);
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.22;
+      background-image:
+        linear-gradient(rgba(127,143,180,.07) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(127,143,180,.07) 1px,transparent 1px);
+      background-size:44px 44px;
+      mask-image:linear-gradient(to bottom,black,transparent 78%);
     }
+
     .shell{
-      width:min(100%,1120px);margin:auto;position:relative;z-index:1;
-      padding:max(28px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(34px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));
+      width:min(100%,900px);
+      margin:0 auto;
+      position:relative;
+      z-index:1;
+      padding:
+        max(26px,env(safe-area-inset-top))
+        max(18px,env(safe-area-inset-right))
+        max(36px,env(safe-area-inset-bottom))
+        max(18px,env(safe-area-inset-left));
     }
-    .hero{padding:18px 4px 30px}
-    h1{margin:20px 0 12px;max-width:780px;font-size:clamp(2.45rem,8vw,5rem);line-height:.94;letter-spacing:-.06em;font-weight:860}
-    .gradient{color:transparent;background:linear-gradient(110deg,var(--blue),var(--cyan) 54%,var(--green));-webkit-background-clip:text;background-clip:text}
-    .year{display:block;margin-top:.18em;color:var(--text);font-size:.42em;line-height:1;letter-spacing:-.025em;font-weight:760;opacity:.72}
-    .subtitle{margin:0;max-width:660px;color:var(--muted);font-size:clamp(1rem,3.8vw,1.2rem);line-height:1.55;font-weight:500}
 
-    .grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:620px}
+    .hero{
+      width:100%;
+      max-width:760px;
+      margin:0 auto;
+      padding:26px 0 34px;
+      text-align:center;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(3rem,10vw,5.9rem);
+      line-height:.91;
+      letter-spacing:-.067em;
+      font-weight:880;
+    }
+    .title-white{
+      display:block;
+      color:var(--headline);
+    }
+    .title-gradient{
+      display:block;
+      margin-top:.05em;
+      color:transparent;
+      background:linear-gradient(105deg,var(--blue) 4%,var(--cyan) 48%,var(--green) 96%);
+      -webkit-background-clip:text;
+      background-clip:text;
+    }
+    .year{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-top:18px;
+      min-height:34px;
+      padding:6px 13px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:color-mix(in srgb,var(--surface-strong) 68%,transparent);
+      color:var(--muted);
+      font-size:.86rem;
+      font-weight:800;
+      letter-spacing:.12em;
+    }
+
+    .content{
+      display:grid;
+      gap:18px;
+      width:100%;
+      max-width:700px;
+      margin:0 auto;
+    }
+
     .project{
-      --accent:var(--blue); position:relative;overflow:hidden;min-width:0;
-      border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow);
-      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);isolation:isolate;
+      --accent:var(--blue);
+      position:relative;
+      overflow:hidden;
+      min-width:0;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:var(--surface);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      isolation:isolate;
     }
-    .project::after{content:"";position:absolute;width:180px;height:180px;right:-88px;top:-94px;border-radius:50%;background:var(--accent);opacity:.11;z-index:-1}
-    .bo{--accent:var(--blue)} .resources{--accent:var(--green)}
+    .project::after{
+      content:"";
+      position:absolute;
+      width:190px;
+      height:190px;
+      right:-105px;
+      top:-105px;
+      border-radius:50%;
+      background:var(--accent);
+      opacity:.11;
+      z-index:-1;
+    }
+    .bo{--accent:var(--blue)}
+    .resources{--accent:var(--green)}
 
-    .project-head{display:flex;align-items:flex-start;gap:14px;padding:20px 20px 14px;min-height:84px}
+    .project-head{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      padding:20px 20px 15px;
+    }
     .icon{
-      display:grid;place-items:center;flex:0 0 auto;width:50px;height:50px;border-radius:16px;color:var(--accent);
-      background:color-mix(in srgb,var(--accent) 12%,var(--surface2));border:1px solid color-mix(in srgb,var(--accent) 24%,var(--border));
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      width:50px;
+      height:50px;
+      border-radius:16px;
+      color:var(--accent);
+      background:color-mix(in srgb,var(--accent) 12%,var(--surface-strong));
+      border:1px solid color-mix(in srgb,var(--accent) 25%,var(--border));
     }
     .icon svg{width:25px;height:25px;stroke-width:2}
-    .project-copy{min-width:0}
-    .project h2{margin:1px 0 4px;font-size:1.26rem;letter-spacing:-.03em}
-    .project p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.45}
+    .project-copy{min-width:0;padding-top:1px}
+    .project h2{
+      margin:0 0 5px;
+      font-size:clamp(1.12rem,4vw,1.32rem);
+      line-height:1.2;
+      letter-spacing:-.03em;
+    }
+    .project p{
+      margin:0;
+      color:var(--muted);
+      font-size:.88rem;
+      line-height:1.45;
+    }
 
-    .links{display:grid;gap:10px;padding:2px 12px 12px}
+    .links{
+      display:grid;
+      gap:10px;
+      padding:1px 12px 12px;
+    }
     .deploy{
-      display:flex;align-items:center;gap:12px;min-height:68px;padding:12px 13px 12px 14px;text-decoration:none;
-      border:1px solid var(--border);border-radius:var(--radius-sm);background:color-mix(in srgb,var(--surface2) 84%,transparent);
-      transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;-webkit-tap-highlight-color:transparent;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-height:66px;
+      padding:11px 12px 11px 13px;
+      text-decoration:none;
+      border:1px solid var(--border);
+      border-radius:var(--radius-sm);
+      background:color-mix(in srgb,var(--surface-strong) 84%,transparent);
+      transition:transform .18s ease,border-color .18s ease,background .18s ease;
+      -webkit-tap-highlight-color:transparent;
     }
     .deploy:active{transform:scale(.985)}
-    .host{width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;border-radius:12px;background:color-mix(in srgb,var(--accent) 11%,var(--surface));color:var(--accent);font-size:.72rem;font-weight:850}
+    .host{
+      width:38px;
+      height:38px;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      border-radius:12px;
+      background:color-mix(in srgb,var(--accent) 11%,var(--surface));
+      color:var(--accent);
+      font-size:.72rem;
+      font-weight:850;
+    }
     .deploy-text{min-width:0;flex:1}
-    .deploy-label{display:flex;align-items:center;gap:7px;margin-bottom:3px;font-size:.9rem;font-weight:760}
-    .badge{display:inline-flex;align-items:center;min-height:19px;padding:2px 7px;border-radius:999px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);font-size:.61rem;font-weight:820;letter-spacing:.055em;text-transform:uppercase;white-space:nowrap}
-    .url{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:.78rem}
-    .arrow{display:grid;place-items:center;flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);font-size:1.1rem}
+    .deploy-label{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      margin-bottom:3px;
+      font-size:.9rem;
+      font-weight:780;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      min-height:19px;
+      padding:2px 7px;
+      border-radius:999px;
+      background:color-mix(in srgb,var(--accent) 12%,transparent);
+      color:var(--accent);
+      font-size:.59rem;
+      font-weight:850;
+      letter-spacing:.055em;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+    .url{
+      display:block;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      color:var(--muted);
+      font-size:.77rem;
+    }
+    .arrow{
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      background:color-mix(in srgb,var(--accent) 10%,transparent);
+      color:var(--accent);
+      font-size:1.05rem;
+    }
 
-    .mirrors{margin-top:2px}
+    .mirrors{margin-top:1px}
     .mirrors summary{
-      list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;
-      min-height:46px;padding:10px 13px;cursor:pointer;color:var(--muted);font-size:.78rem;font-weight:760;
-      border:1px dashed color-mix(in srgb,var(--accent) 24%,var(--border));border-radius:16px;
-      background:color-mix(in srgb,var(--accent) 4%,transparent);-webkit-tap-highlight-color:transparent;
+      list-style:none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      min-height:44px;
+      padding:10px 13px;
+      cursor:pointer;
+      color:var(--muted);
+      font-size:.77rem;
+      font-weight:760;
+      border:1px dashed color-mix(in srgb,var(--accent) 24%,var(--border));
+      border-radius:15px;
+      background:color-mix(in srgb,var(--accent) 4%,transparent);
+      -webkit-tap-highlight-color:transparent;
     }
     .mirrors summary::-webkit-details-marker{display:none}
-    .mirrors summary::after{content:"⌄";font-size:1rem;color:var(--accent);transition:transform .18s ease}
+    .mirrors summary::after{
+      content:"⌄";
+      font-size:1rem;
+      color:var(--accent);
+      transition:transform .18s ease;
+    }
     .mirrors[open] summary::after{transform:rotate(180deg)}
     .mirror-list{display:grid;gap:10px;padding-top:10px}
 
-    .resource-groups{display:grid;gap:0;padding:0 18px 16px}
-    .resource-group{padding:14px 0;border-top:1px solid var(--border)}
+    .resource-groups{
+      display:grid;
+      gap:0;
+      padding:0 18px 16px;
+    }
+    .resource-group{
+      padding:14px 0;
+      border-top:1px solid var(--border);
+    }
     .resource-group:first-child{border-top:0;padding-top:4px}
-    .resource-title{display:flex;align-items:center;gap:8px;margin:0 0 9px;color:var(--text);font-size:.76rem;font-weight:850;letter-spacing:.025em}
-    .resource-title::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 10%,transparent)}
-    .resource-items{display:flex;flex-wrap:wrap;gap:7px;padding-left:15px}
-    .resource-link{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:8px 11px;border:1px solid color-mix(in srgb,var(--accent) 15%,var(--border));border-radius:999px;color:var(--text);text-decoration:none;background:color-mix(in srgb,var(--surface2) 72%,transparent);font-size:.8rem;font-weight:700;-webkit-tap-highlight-color:transparent;transition:background .18s ease,border-color .18s ease,transform .18s ease}
+    .resource-title{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin:0 0 10px;
+      color:var(--text);
+      font-size:.76rem;
+      font-weight:850;
+      letter-spacing:.025em;
+    }
+    .resource-title::before{
+      content:"";
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 10%,transparent);
+    }
+    .resource-items{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+      padding-left:15px;
+    }
+    .resource-link{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      min-height:36px;
+      padding:8px 11px;
+      border:1px solid color-mix(in srgb,var(--accent) 15%,var(--border));
+      border-radius:999px;
+      color:var(--text);
+      text-decoration:none;
+      background:color-mix(in srgb,var(--surface-strong) 72%,transparent);
+      font-size:.8rem;
+      font-weight:700;
+      -webkit-tap-highlight-color:transparent;
+      transition:background .18s ease,border-color .18s ease,transform .18s ease;
+    }
     .resource-link span:last-child{color:var(--accent);font-size:.88rem}
 
-    footer{display:flex;align-items:center;justify-content:center;max-width:620px;margin:34px 0 0;padding:18px 6px 0;color:var(--muted);font-size:.74rem;text-align:center;font-weight:760;letter-spacing:.07em}
+    footer{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:28px auto 0;
+      padding:16px 6px 0;
+      color:var(--muted);
+      font-size:.7rem;
+      text-align:center;
+      font-weight:760;
+      letter-spacing:.08em;
+    }
 
-    @media (min-width:700px){
-      .shell{padding-inline:28px}.hero{padding-top:42px;padding-bottom:42px}
-      .grid{gap:20px}
-      .project-head{padding:24px 24px 16px}
-      .links{padding:3px 16px 16px}
+    @media (min-width:620px){
+      .shell{padding-inline:28px}
+      .hero{padding-top:44px;padding-bottom:44px}
+      .content{gap:20px}
+      .project-head{padding:24px 24px 17px}
+      .links{padding:2px 16px 16px}
+      .resource-groups{padding-inline:22px;padding-bottom:20px}
     }
-    @media (min-width:980px){
-      .grid,footer{margin-left:auto;margin-right:auto}
-      .project{width:100%}
+
+    @media (min-width:900px){
+      .shell{padding-top:48px}
+      .hero{padding-top:22px;padding-bottom:48px}
+      h1{font-size:5.7rem}
     }
+
     @media (hover:hover) and (pointer:fine){
-      .project{transition:transform .24s ease,box-shadow .24s ease}.project:hover{transform:translateY(-3px);box-shadow:0 24px 72px rgba(33,57,116,.19)}
-      .deploy:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 36%,var(--border));background:color-mix(in srgb,var(--accent) 7%,var(--surface2))}
+      .project{transition:transform .24s ease,box-shadow .24s ease}
+      .project:hover{transform:translateY(-2px);box-shadow:0 24px 72px rgba(33,57,116,.18)}
+      .deploy:hover{
+        transform:translateY(-1px);
+        border-color:color-mix(in srgb,var(--accent) 36%,var(--border));
+        background:color-mix(in srgb,var(--accent) 6%,var(--surface-strong));
+      }
       .mirrors summary:hover{color:var(--text);border-color:color-mix(in srgb,var(--accent) 38%,var(--border))}
-      .resource-link:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 34%,var(--border));background:color-mix(in srgb,var(--accent) 7%,var(--surface2))}
+      .resource-link:hover{
+        transform:translateY(-1px);
+        border-color:color-mix(in srgb,var(--accent) 34%,var(--border));
+        background:color-mix(in srgb,var(--accent) 7%,var(--surface-strong));
+      }
     }
+
     @media (prefers-reduced-motion:no-preference){
-      .project{animation:rise .58s cubic-bezier(.2,.76,.28,1) both}.project:nth-child(2){animation-delay:.07s}
-      @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+      .hero{animation:hero-in .48s cubic-bezier(.2,.76,.28,1) both}
+      .project{animation:rise .56s cubic-bezier(.2,.76,.28,1) both}
+      .project:nth-child(2){animation-delay:.06s}
+      @keyframes hero-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
     }
   </style>
 </head>
 <body>
   <main class="shell">
     <header class="hero">
-      <h1><span class="gradient">Berufliche Orientierung</span><span class="year">2026</span></h1>
+      <h1>
+        <span class="title-white">Berufliche</span>
+        <span class="title-gradient">Orientierung</span>
+      </h1>
+      <span class="year">2026</span>
     </header>
 
-    <section class="grid" aria-label="BO links">
+    <section class="content" aria-label="Berufliche Orientierung">
       <article class="project bo">
         <div class="project-head">
-          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7V5.8A2.8 2.8 0 0 1 10.8 3h2.4A2.8 2.8 0 0 1 16 5.8V7"/><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M3 12h18M9 12v2h6v-2"/></svg></div>
-          <div class="project-copy"><h2>Bewerbungsdossier erstellen</h2><p>Titelblatt · Motivationsschreiben · Lebenslauf</p></div>
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 7V5.8A2.8 2.8 0 0 1 10.8 3h2.4A2.8 2.8 0 0 1 16 5.8V7"/>
+              <rect x="3" y="7" width="18" height="13" rx="3"/>
+              <path d="M3 12h18M9 12v2h6v-2"/>
+            </svg>
+          </div>
+          <div class="project-copy">
+            <h2>Bewerbungsdossier erstellen</h2>
+            <p>Titelblatt · Motivationsschreiben · Lebenslauf</p>
+          </div>
         </div>
+
         <div class="links">
-          <a class="deploy" href="https://bo2026.vercel.app/" target="_blank" rel="noopener"><span class="host">V</span><span class="deploy-text"><span class="deploy-label">Vercel <span class="badge">Primary</span></span><span class="url">bo2026.vercel.app</span></span><span class="arrow" aria-hidden="true">↗</span></a>
+          <a class="deploy" href="https://bo2026.vercel.app/" target="_blank" rel="noopener">
+            <span class="host">V</span>
+            <span class="deploy-text">
+              <span class="deploy-label">Vercel <span class="badge">Primary</span></span>
+              <span class="url">bo2026.vercel.app</span>
+            </span>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+
           <details class="mirrors">
-            <summary>Mirrors</summary>
+            <summary>Mirror</summary>
             <div class="mirror-list">
-              <a class="deploy" href="https://dev-bo2026.onrender.com/" target="_blank" rel="noopener"><span class="host">R</span><span class="deploy-text"><span class="deploy-label">Render <span class="badge">Mirror</span></span><span class="url">dev-bo2026.onrender.com</span></span><span class="arrow" aria-hidden="true">↗</span></a>
+              <a class="deploy" href="https://dev-bo2026.onrender.com/" target="_blank" rel="noopener">
+                <span class="host">R</span>
+                <span class="deploy-text">
+                  <span class="deploy-label">Render <span class="badge">Mirror</span></span>
+                  <span class="url">dev-bo2026.onrender.com</span>
+                </span>
+                <span class="arrow" aria-hidden="true">↗</span>
+              </a>
             </div>
           </details>
         </div>
@@ -153,9 +452,18 @@
 
       <article class="project resources">
         <div class="project-head">
-          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v15H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 6.5v15M8 8h8M8 12h6"/></svg></div>
-          <div class="project-copy"><h2>BO / EE</h2><p>Wichtige Ressourcen</p></div>
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v15H6.5A2.5 2.5 0 0 0 4 21.5z"/>
+              <path d="M4 6.5v15M8 8h8M8 12h6"/>
+            </svg>
+          </div>
+          <div class="project-copy">
+            <h2>BO / EE</h2>
+            <p>Wichtige Ressourcen</p>
+          </div>
         </div>
+
         <div class="resource-groups">
           <section class="resource-group" aria-label="Schnuppern">
             <h3 class="resource-title">Schnuppern</h3>
@@ -164,6 +472,7 @@
               <a class="resource-link" href="https://www.yousty.ch/de-CH/lehrstellen/bewerbung/schnuppern/schnupperlehren" target="_blank" rel="noopener"><span>Yousty · Schnupperlehren</span><span aria-hidden="true">↗</span></a>
             </div>
           </section>
+
           <section class="resource-group" aria-label="Berufe entdecken">
             <h3 class="resource-title">Berufe entdecken</h3>
             <div class="resource-items">
@@ -171,12 +480,14 @@
               <a class="resource-link" href="https://www.anforderungsprofile.ch/" target="_blank" rel="noopener"><span>Anforderungsprofile</span><span aria-hidden="true">↗</span></a>
             </div>
           </section>
+
           <section class="resource-group" aria-label="Lehrstelle finden">
             <h3 class="resource-title">Lehrstelle finden</h3>
             <div class="resource-items">
               <a class="resource-link" href="https://www.berufsberatung.ch/de/lehrstelle-suchen" target="_blank" rel="noopener"><span>LENA · offene Lehrstellen</span><span aria-hidden="true">↗</span></a>
             </div>
           </section>
+
           <section class="resource-group" aria-label="Region Solothurn">
             <h3 class="resource-title">Region Solothurn</h3>
             <div class="resource-items">
