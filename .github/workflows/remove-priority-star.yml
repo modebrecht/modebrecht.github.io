@@ -1,0 +1,45 @@
+name: Remove BO Priority Star
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/remove-priority-star.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove priority star
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          start = s.find('    .priority-star{')
+          if start != -1:
+              end = s.find('\n    }\n', start)
+              if end == -1:
+                  raise SystemExit('priority-star CSS end not found')
+              s = s[:start] + s[end + len('\n    }\n'):]
+
+          s = s.replace('      .priority-star{top:21px;right:21px}\n', '', 1)
+          s = s.replace('        <span class="priority-star" title="Aktuell relevant" aria-label="Aktuell relevant">★</span>\n', '', 1)
+          s = s.replace('    .bo .project-head{padding-right:76px}\n', '', 1)
+          s = s.replace('      .project-head{padding:24px 24px 16px}.bo .project-head{padding-right:82px}\n', '      .project-head{padding:24px 24px 16px}\n', 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit star removal
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --check
+          git commit -m "Remove BO priority star"
+          git push
