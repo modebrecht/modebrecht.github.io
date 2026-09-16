@@ -53,6 +53,7 @@ jobs:
 
           wrapper = f'''from __future__ import annotations
           import sys
+          from urllib.parse import urlsplit
 
           BASE_SOURCE = {base!r}
           TARGET_MARKER = {target_marker!r}
@@ -61,6 +62,32 @@ jobs:
               "1": ("Vercel", "bo2026.vercel.app", "https://bo2026.vercel.app"),
               "2": ("Render", "dev-bo2026.onrender.com", "https://dev-bo2026.onrender.com"),
           }}
+
+          def normalize_custom(raw):
+              value = (raw or "").strip()
+              if not value:
+                  raise ValueError("Keine Domain eingegeben.")
+              if "://" not in value:
+                  value = "https://" + value
+              parsed = urlsplit(value)
+              scheme = parsed.scheme.lower()
+              if scheme not in {{"http", "https"}}:
+                  raise ValueError("Nur http:// oder https:// werden unterstützt.")
+              if not parsed.hostname:
+                  raise ValueError("Keine gültige Domain erkannt.")
+              if parsed.username or parsed.password:
+                  raise ValueError("Benutzername/Passwort in der URL werden nicht unterstützt.")
+              try:
+                  port = parsed.port
+              except ValueError as exc:
+                  raise ValueError("Ungültiger Port.") from exc
+              hostname = parsed.hostname.lower()
+              netloc = f"[{{hostname}}]" if ":" in hostname and not hostname.startswith("[") else hostname
+              if port is not None:
+                  netloc += f":{{port}}"
+              origin = f"{{scheme}}://{{netloc}}"
+              safe = "".join(c if c.isalnum() or c in "-_." else "_" for c in netloc)
+              return (f"Custom-{{safe}}", netloc, origin)
 
           def run_target(label, host, origin):
               print("\\n" + "=" * 64)
@@ -79,22 +106,37 @@ jobs:
               namespace["main"]()
 
           def choose_targets():
-              print("BO2026 Emergency Recovery")
-              print("-------------------------")
-              print("Welche Browserdaten sollen gerettet werden?")
-              print("  1  Vercel  - bo2026.vercel.app")
-              print("  2  Render  - dev-bo2026.onrender.com")
-              print("  3  Beide durchsuchen")
-              print("\\nEnter ohne Eingabe = Beide (empfohlen)")
-              try:
-                  choice = input("Auswahl [3]: ").strip()
-              except (EOFError, KeyboardInterrupt):
-                  choice = "3"
-              if choice == "1":
-                  return [TARGETS["1"]]
-              if choice == "2":
-                  return [TARGETS["2"]]
-              return [TARGETS["1"], TARGETS["2"]]
+              while True:
+                  print("BO2026 Emergency Recovery")
+                  print("-------------------------")
+                  print("Welche Browserdaten sollen gerettet werden?")
+                  print("  1  Vercel  - bo2026.vercel.app")
+                  print("  2  Render  - dev-bo2026.onrender.com")
+                  print("  3  Beide durchsuchen")
+                  print("  4  Eigene Domain eingeben")
+                  print("\\nEnter ohne Eingabe = Beide (empfohlen)")
+                  try:
+                      choice = input("Auswahl [3]: ").strip()
+                  except (EOFError, KeyboardInterrupt):
+                      choice = "3"
+                  if choice == "1":
+                      return [TARGETS["1"]]
+                  if choice == "2":
+                      return [TARGETS["2"]]
+                  if choice in {{"", "3"}}:
+                      return [TARGETS["1"], TARGETS["2"]]
+                  if choice == "4":
+                      try:
+                          raw = input("Domain/URL (z.B. bo.schule.ch): ").strip()
+                          target = normalize_custom(raw)
+                          print(f"Erkannte Origin: {{target[2]}}")
+                          return [target]
+                      except (EOFError, KeyboardInterrupt):
+                          return [TARGETS["1"], TARGETS["2"]]
+                      except ValueError as exc:
+                          print(f"Ungültige Domain: {{exc}}\\n")
+                          continue
+                  print("Bitte 1, 2, 3 oder 4 eingeben.\\n")
 
           def main():
               selected = choose_targets()
@@ -117,7 +159,6 @@ jobs:
               main()
           '''
 
-          # Remove indentation introduced by the YAML heredoc.
           import textwrap
           wrapper = textwrap.dedent(wrapper)
           out = Path('build-src/bo2026_recover_windows.py')
@@ -127,6 +168,22 @@ jobs:
           print(f'Prepared unified source: {out}')
           '@ | Set-Content -Encoding UTF8 prepare_recovery.py
           py prepare_recovery.py
+
+      - name: Validate custom domain parser
+        shell: pwsh
+        run: |
+          @'
+          import importlib.util
+          from pathlib import Path
+          path = Path('build-src/bo2026_recover_windows.py')
+          spec = importlib.util.spec_from_file_location('bo_recovery', path)
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          assert mod.normalize_custom('bo.schule.ch/test')[1:] == ('bo.schule.ch', 'https://bo.schule.ch')
+          assert mod.normalize_custom('http://localhost:8080/foo')[1:] == ('localhost:8080', 'http://localhost:8080')
+          print('Custom domain parser OK')
+          '@ | Set-Content -Encoding UTF8 validate_custom.py
+          py validate_custom.py
 
       - name: Install build dependencies
         shell: pwsh
@@ -150,7 +207,6 @@ jobs:
       - name: Smoke-test executable
         shell: pwsh
         run: |
-          # CI has no interactive stdin; the EXE must default to "Both" and exit cleanly.
           & .\dist\BO2026-Recovery-Windows.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
@@ -179,10 +235,9 @@ jobs:
           $tag = 'bo2026-recovery-latest'
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
           if ($LASTEXITCODE -ne 0) {
-            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title 'BO2026 Recovery – Windows' --notes 'One BO2026 Windows recovery tool. Choose Vercel, Render, or both at startup. Read-only browser profile recovery.' --latest
+            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title 'BO2026 Recovery – Windows' --notes 'One BO2026 Windows recovery tool. Choose Vercel, Render, both, or enter a custom domain. Read-only browser profile recovery.' --latest
           }
 
-          # Remove the previous split assets so the release stays understandable.
           foreach ($asset in @(
             'BO2026-Recovery-Vercel-Windows.exe',
             'BO2026-Recovery-Vercel-Windows.exe.sha256',
