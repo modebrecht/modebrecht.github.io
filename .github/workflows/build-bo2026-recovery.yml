@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Extract embedded recovery script
+      - name: Extract Vercel and Render recovery scripts
         shell: pwsh
         run: |
           @'
@@ -43,11 +43,28 @@ jobs:
           if not match:
               raise SystemExit('Embedded recoveryPython script not found')
 
-          out = Path('build-src/bo2026_recover.py')
-          out.parent.mkdir(parents=True, exist_ok=True)
-          out.write_text(match.group(1).lstrip(), encoding='utf-8')
-          compile(out.read_text(encoding='utf-8'), str(out), 'exec')
-          print(f'Extracted {out}')
+          base = match.group(1).lstrip()
+          marker = 'HOST="bo2026.vercel.app"; ORIGIN="https://bo2026.vercel.app"; KIND="cv-cover-charm-dossier"; VERSION=1'
+          if marker not in base:
+              raise SystemExit('Recovery target marker not found')
+
+          targets = {
+              'Vercel': ('bo2026.vercel.app', 'https://bo2026.vercel.app'),
+              'Render': ('dev-bo2026.onrender.com', 'https://dev-bo2026.onrender.com'),
+          }
+
+          outdir = Path('build-src')
+          outdir.mkdir(parents=True, exist_ok=True)
+          for name, (host, origin) in targets.items():
+              script = base.replace(
+                  marker,
+                  f'HOST="{host}"; ORIGIN="{origin}"; KIND="cv-cover-charm-dossier"; VERSION=1',
+                  1,
+              )
+              out = outdir / f'bo2026_recover_{name.lower()}.py'
+              out.write_text(script, encoding='utf-8')
+              compile(script, str(out), 'exec')
+              print(f'Prepared {out} for {origin}')
           '@ | Set-Content -Encoding UTF8 extract_recovery.py
           py extract_recovery.py
 
@@ -57,42 +74,42 @@ jobs:
           py -m pip install --upgrade pip
           py -m pip install pyinstaller python-snappy "git+https://github.com/cclgroupltd/ccl_chromium_reader.git@ef840de30221c4d65bc96d2f4d9057e9ef2f526d"
 
-      - name: Build standalone Windows executable
+      - name: Build standalone Windows executables
         shell: pwsh
         run: |
-          py -m PyInstaller `
-            --noconfirm `
-            --clean `
-            --onefile `
-            --console `
-            --name BO2026-Recovery-Windows `
-            --collect-all ccl_chromium_reader `
-            --hidden-import snappy `
-            build-src/bo2026_recover.py
+          py -m PyInstaller --noconfirm --clean --onefile --console --name BO2026-Recovery-Vercel-Windows --collect-all ccl_chromium_reader --hidden-import snappy build-src/bo2026_recover_vercel.py
+          py -m PyInstaller --noconfirm --clean --onefile --console --name BO2026-Recovery-Render-Windows --collect-all ccl_chromium_reader --hidden-import snappy build-src/bo2026_recover_render.py
 
-      - name: Smoke-test executable
+      - name: Smoke-test executables
         shell: pwsh
         run: |
-          & .\dist\BO2026-Recovery-Windows.exe
+          & .\dist\BO2026-Recovery-Vercel-Windows.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & .\dist\BO2026-Recovery-Render-Windows.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Create SHA-256 checksum
+      - name: Create SHA-256 checksums
         shell: pwsh
         run: |
-          $hash = (Get-FileHash .\dist\BO2026-Recovery-Windows.exe -Algorithm SHA256).Hash.ToLower()
-          "$hash  BO2026-Recovery-Windows.exe" | Set-Content -Encoding ASCII .\dist\BO2026-Recovery-Windows.exe.sha256
-          Write-Host "SHA256: $hash"
+          foreach ($name in @('Vercel','Render')) {
+            $file = ".\dist\BO2026-Recovery-$name-Windows.exe"
+            $hash = (Get-FileHash $file -Algorithm SHA256).Hash.ToLower()
+            "$hash  BO2026-Recovery-$name-Windows.exe" | Set-Content -Encoding ASCII "$file.sha256"
+            Write-Host "$name SHA256: $hash"
+          }
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: BO2026-Recovery-Windows
           path: |
-            dist/BO2026-Recovery-Windows.exe
-            dist/BO2026-Recovery-Windows.exe.sha256
+            dist/BO2026-Recovery-Vercel-Windows.exe
+            dist/BO2026-Recovery-Vercel-Windows.exe.sha256
+            dist/BO2026-Recovery-Render-Windows.exe
+            dist/BO2026-Recovery-Render-Windows.exe.sha256
           if-no-files-found: error
 
-      - name: Publish stable GitHub Release asset
+      - name: Publish stable GitHub Release assets
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -100,15 +117,12 @@ jobs:
           $tag = 'bo2026-recovery-latest'
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
           if ($LASTEXITCODE -ne 0) {
-            gh release create $tag `
-              --repo $env:GITHUB_REPOSITORY `
-              --target $env:GITHUB_SHA `
-              --title 'BO2026 Recovery – Windows' `
-              --notes 'Standalone Windows x64 emergency recovery tool for BO2026. Read-only browser profile recovery.' `
-              --latest
+            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title 'BO2026 Recovery – Windows' --notes 'Standalone Windows x64 emergency recovery tools for BO2026 Vercel and Render origins. Read-only browser profile recovery.' --latest
           }
           gh release upload $tag `
-            .\dist\BO2026-Recovery-Windows.exe `
-            .\dist\BO2026-Recovery-Windows.exe.sha256 `
+            .\dist\BO2026-Recovery-Vercel-Windows.exe `
+            .\dist\BO2026-Recovery-Vercel-Windows.exe.sha256 `
+            .\dist\BO2026-Recovery-Render-Windows.exe `
+            .\dist\BO2026-Recovery-Render-Windows.exe.sha256 `
             --repo $env:GITHUB_REPOSITORY `
             --clobber
