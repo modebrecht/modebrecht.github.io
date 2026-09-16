@@ -102,6 +102,13 @@
     .mirrors[open] summary::after{transform:rotate(180deg)}
     .mirror-list{display:grid;gap:10px;padding-top:10px}
 
+    .resource-groups{display:grid;gap:10px;padding:2px 12px 14px}
+    .resource-group{padding:12px;border:1px solid var(--border);border-radius:16px;background:color-mix(in srgb,var(--surface2) 76%,transparent)}
+    .resource-title{margin:0 0 8px;color:var(--text);font-size:.78rem;font-weight:820;letter-spacing:.01em}
+    .resource-items{display:grid;gap:6px}
+    .resource-link{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:38px;padding:8px 10px;border-radius:11px;color:var(--text);text-decoration:none;background:color-mix(in srgb,var(--accent) 5%,transparent);font-size:.82rem;font-weight:690;-webkit-tap-highlight-color:transparent}
+    .resource-link span:last-child{color:var(--accent);font-size:.95rem}
+
     footer{display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-top:28px;padding:13px 5px 0;color:var(--muted);font-size:.74rem}
     .footer-links{display:flex;gap:14px;flex-wrap:wrap}
     footer a{color:inherit;text-decoration:none;font-weight:700}
@@ -120,6 +127,7 @@
       .project{transition:transform .24s ease,box-shadow .24s ease}.project:hover{transform:translateY(-3px);box-shadow:0 24px 72px rgba(33,57,116,.19)}
       .deploy:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 36%,var(--border));background:color-mix(in srgb,var(--accent) 7%,var(--surface2))}
       .mirrors summary:hover{color:var(--text);border-color:color-mix(in srgb,var(--accent) 38%,var(--border))}
+      .resource-link:hover{background:color-mix(in srgb,var(--accent) 11%,var(--surface2))}
     }
     @media (prefers-reduced-motion:no-preference){
       .project{animation:rise .58s cubic-bezier(.2,.76,.28,1) both}.project:nth-child(2){animation-delay:.07s}
@@ -157,8 +165,33 @@
           <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v15H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 6.5v15M8 8h8M8 12h6"/></svg></div>
           <div class="project-copy"><h2>BO / EE / Ressourcen</h2><p>Externe Angebote &amp; Hilfsmittel</p></div>
         </div>
-        <div class="links">
-          <a class="deploy" href="https://schnuppy.ch/" target="_blank" rel="noopener"><span class="host">S</span><span class="deploy-text"><span class="deploy-label">Schnuppy.ch <span class="badge">Ressource</span></span><span class="url">schnuppy.ch</span></span><span class="arrow" aria-hidden="true">↗</span></a>
+        <div class="resource-groups">
+          <section class="resource-group" aria-label="Schnuppern">
+            <h3 class="resource-title">Schnuppern</h3>
+            <div class="resource-items">
+              <a class="resource-link" href="https://schnuppy.ch/" target="_blank" rel="noopener"><span>Schnuppy.ch</span><span aria-hidden="true">↗</span></a>
+              <a class="resource-link" href="https://www.yousty.ch/de-CH/lehrstellen/bewerbung/schnuppern/schnupperlehren" target="_blank" rel="noopener"><span>Yousty · Schnupperlehren</span><span aria-hidden="true">↗</span></a>
+            </div>
+          </section>
+          <section class="resource-group" aria-label="Berufe entdecken">
+            <h3 class="resource-title">Berufe entdecken</h3>
+            <div class="resource-items">
+              <a class="resource-link" href="https://www.berufsberatung.ch/de/berufs-check" target="_blank" rel="noopener"><span>Berufs-Check</span><span aria-hidden="true">↗</span></a>
+              <a class="resource-link" href="https://www.anforderungsprofile.ch/" target="_blank" rel="noopener"><span>Anforderungsprofile</span><span aria-hidden="true">↗</span></a>
+            </div>
+          </section>
+          <section class="resource-group" aria-label="Lehrstelle finden">
+            <h3 class="resource-title">Lehrstelle finden</h3>
+            <div class="resource-items">
+              <a class="resource-link" href="https://www.berufsberatung.ch/de/lehrstelle-suchen" target="_blank" rel="noopener"><span>LENA · offene Lehrstellen</span><span aria-hidden="true">↗</span></a>
+            </div>
+          </section>
+          <section class="resource-group" aria-label="Region Solothurn">
+            <h3 class="resource-title">Region Solothurn</h3>
+            <div class="resource-items">
+              <a class="resource-link" href="https://so.ch/verwaltung/departement-fuer-bildung-kultur-und-sport/amt-fuer-berufsbildung-mittel-und-hochschulen/berufs-studien-und-laufbahnberatung/unser-angebot/beratung/berufsberatung/schnupperlehrstellen-oder-offene-lehrstellen-suchen/" target="_blank" rel="noopener"><span>BIZ Solothurn</span><span aria-hidden="true">↗</span></a>
+            </div>
+          </section>
         </div>
       </article>
     </section>
