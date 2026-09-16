@@ -2,561 +2,263 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#090d18">
-  <meta name="description" content="BO2026 Notfall-Recovery: localStorage aus Chrome, Edge, Firefox und Safari retten, auch wenn Vercel nicht erreichbar ist.">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#080d18">
+  <meta name="description" content="BO2026 Notfall-Recovery für Chrome, Edge, Brave, Vivaldi, Opera, Firefox, Safari und Chrome Android.">
   <title>BO2026 · Emergency Recovery</title>
   <style>
-    :root{
-      color-scheme:dark;
-      --bg:#070b13;--bg2:#0d1424;--panel:rgba(18,27,47,.82);--panel2:#111a2d;
-      --text:#f5f7ff;--muted:#98a6c1;--line:rgba(255,255,255,.09);
-      --red:#ff6577;--amber:#ffbd59;--green:#52dda0;--blue:#7894ff;--cyan:#5ad8f6;
-      --shadow:0 24px 70px rgba(0,0,0,.34);--radius:26px;--radius2:18px;
-    }
-    *{box-sizing:border-box}
-    html{background:var(--bg);scroll-behavior:smooth}
-    body{
-      margin:0;min-height:100svh;color:var(--text);
-      font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:
-        radial-gradient(circle at 10% 3%,rgba(120,148,255,.18),transparent 32%),
-        radial-gradient(circle at 92% 14%,rgba(90,216,246,.12),transparent 30%),
-        linear-gradient(160deg,var(--bg),var(--bg2));
-    }
-    a{color:inherit}
-    button{font:inherit}
-    .shell{width:min(100%,1050px);margin:auto;padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(50px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
-    .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:30px}
-    .back{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--muted);font-size:.88rem;font-weight:750}
-    .status{display:inline-flex;gap:7px;align-items:center;padding:7px 11px;border:1px solid rgba(82,221,160,.22);border-radius:999px;color:var(--green);background:rgba(82,221,160,.07);font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
-    .status::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 14px currentColor}
-    .hero{padding:12px 2px 34px}
-    .eyebrow{margin:0 0 12px;color:var(--red);font-size:.76rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase}
-    h1{margin:0;max-width:850px;font-size:clamp(2.45rem,9vw,5.5rem);line-height:.94;letter-spacing:-.055em}
-    .hero p{max-width:760px;margin:18px 0 0;color:var(--muted);font-size:clamp(1rem,3vw,1.18rem);line-height:1.6}
-    .hero strong{color:var(--text)}
-    .danger{display:grid;grid-template-columns:auto 1fr;gap:14px;margin:0 0 24px;padding:18px;border:1px solid rgba(255,101,119,.24);border-radius:var(--radius2);background:rgba(255,101,119,.07)}
-    .danger .mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:rgba(255,101,119,.13);color:var(--red);font-weight:900}
-    .danger h2{margin:0 0 4px;font-size:1rem}
-    .danger p{margin:0;color:#c9d1e4;font-size:.9rem;line-height:1.52}
-    .steps{display:grid;grid-template-columns:1fr;gap:12px;margin:24px 0 30px}
-    .step{display:flex;gap:13px;padding:16px;border:1px solid var(--line);border-radius:var(--radius2);background:var(--panel)}
-    .step b{display:grid;place-items:center;flex:0 0 auto;width:32px;height:32px;border-radius:10px;background:rgba(120,148,255,.12);color:var(--blue)}
-    .step h3{margin:1px 0 4px;font-size:.94rem}
-    .step p{margin:0;color:var(--muted);font-size:.83rem;line-height:1.48}
-    .section-title{margin:38px 0 14px;font-size:1.42rem;letter-spacing:-.035em}
-    .tool{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow);overflow:hidden}
-    .tool-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:22px;border-bottom:1px solid var(--line)}
-    .tool-head h2{margin:0 0 6px;font-size:1.24rem}
-    .tool-head p{margin:0;color:var(--muted);font-size:.87rem;line-height:1.5}
-    .pill{flex:0 0 auto;padding:7px 10px;border-radius:999px;background:rgba(82,221,160,.09);color:var(--green);font-size:.69rem;font-weight:850;text-transform:uppercase;letter-spacing:.05em}
-    .tool-body{padding:18px}
-    .actions{display:grid;grid-template-columns:1fr;gap:10px}
-    .btn{display:flex;align-items:center;justify-content:center;gap:9px;min-height:52px;padding:12px 16px;border:1px solid rgba(120,148,255,.3);border-radius:15px;background:linear-gradient(135deg,rgba(120,148,255,.22),rgba(90,216,246,.12));color:#fff;cursor:pointer;font-weight:820;text-decoration:none;transition:transform .15s ease,border-color .15s ease}
-    .btn.secondary{background:rgba(255,255,255,.035);border-color:var(--line);color:#dce3f3}
-    .btn:active{transform:scale(.985)}
-    .install{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
-    .install h3{margin:0 0 9px;font-size:.9rem}
-    .tabs{display:flex;gap:8px;margin-bottom:9px}
-    .tab{padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;font-size:.75rem;font-weight:800}
-    .tab.active{color:var(--text);border-color:rgba(120,148,255,.3);background:rgba(120,148,255,.1)}
-    .codebox{position:relative;border:1px solid var(--line);border-radius:14px;background:#050812;overflow:hidden}
-    pre{margin:0;padding:16px 48px 16px 15px;overflow:auto;color:#d8e3ff;font:500 .76rem/1.58 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;white-space:pre-wrap;word-break:break-word}
-    .copy{position:absolute;top:8px;right:8px;width:32px;height:32px;border:1px solid var(--line);border-radius:9px;background:#11182a;color:#b9c5dd;cursor:pointer}
-    .browser-grid{display:grid;grid-template-columns:1fr;gap:14px}
-    .browser{border:1px solid var(--line);border-radius:var(--radius2);background:var(--panel);overflow:hidden}
-    .browser summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px;cursor:pointer;font-weight:830}
-    .browser summary::-webkit-details-marker{display:none}
-    .browser summary::after{content:"＋";color:var(--muted);font-size:1.2rem}
-    .browser[open] summary::after{content:"−"}
-    .browser-body{padding:0 18px 18px;border-top:1px solid var(--line)}
-    .os{margin-top:15px}
-    .os h3{margin:0 0 8px;font-size:.88rem;color:#dfe6f6}
-    .path{display:flex;align-items:flex-start;gap:8px;margin:7px 0;padding:11px;border:1px solid var(--line);border-radius:12px;background:#080d19;color:#c9d6ee;font:500 .73rem/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all}
-    .path button{flex:0 0 auto;margin-left:auto;border:0;background:transparent;color:var(--cyan);cursor:pointer;font-size:.73rem;font-weight:800}
-    .note{margin:10px 0 0;color:var(--muted);font-size:.78rem;line-height:1.5}
-    .warn{color:var(--amber)}
-    .sources{margin-top:34px;padding:18px;border:1px solid var(--line);border-radius:var(--radius2);background:rgba(255,255,255,.025);color:var(--muted);font-size:.75rem;line-height:1.55}
-    .sources h2{margin:0 0 8px;color:var(--text);font-size:.9rem}
-    .sources a{color:#bdcaff}
-    footer{margin-top:22px;color:#73809b;font-size:.72rem;text-align:center}
-    @media(min-width:720px){.steps{grid-template-columns:repeat(3,1fr)}.actions{grid-template-columns:1fr 1fr}.browser-grid{grid-template-columns:1fr 1fr}.shell{padding-inline:28px}.tool-body{padding:22px}.tool-head{padding:24px}}
-    @media(hover:hover) and (pointer:fine){.btn:hover{transform:translateY(-2px);border-color:rgba(120,148,255,.52)}.back:hover{color:var(--text)}}
+    :root{color-scheme:dark;--bg:#070b13;--bg2:#0d1424;--panel:rgba(18,27,47,.84);--text:#f5f7ff;--muted:#9aa8c2;--line:rgba(255,255,255,.09);--blue:#7894ff;--cyan:#5ad8f6;--green:#52dda0;--amber:#ffbd59;--red:#ff6577;--r:24px;--r2:16px}
+    *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth}body{margin:0;min-height:100svh;color:var(--text);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 8% 2%,rgba(120,148,255,.18),transparent 30%),radial-gradient(circle at 94% 14%,rgba(90,216,246,.11),transparent 28%),linear-gradient(155deg,var(--bg),var(--bg2))}button,input{font:inherit}a{color:inherit}.shell{width:min(100%,1080px);margin:auto;padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(50px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.back{color:var(--muted);text-decoration:none;font-size:.86rem;font-weight:760}.status{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid rgba(82,221,160,.22);border-radius:999px;color:var(--green);background:rgba(82,221,160,.07);font-size:.7rem;font-weight:850;text-transform:uppercase;letter-spacing:.05em}.status:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 13px currentColor}.hero{padding:38px 2px 30px}.eyebrow{margin:0 0 12px;color:var(--red);font-size:.74rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}h1{margin:0;max-width:900px;font-size:clamp(2.45rem,9vw,5.6rem);line-height:.93;letter-spacing:-.055em}.hero p{max-width:790px;margin:18px 0 0;color:var(--muted);font-size:clamp(1rem,3vw,1.17rem);line-height:1.6}.hero strong{color:var(--text)}.alert{display:grid;grid-template-columns:auto 1fr;gap:14px;padding:18px;border:1px solid rgba(255,101,119,.23);border-radius:var(--r2);background:rgba(255,101,119,.07)}.alert .mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:rgba(255,101,119,.13);color:var(--red);font-weight:900}.alert h2{margin:0 0 4px;font-size:1rem}.alert p{margin:0;color:#cbd4e6;font-size:.88rem;line-height:1.52}.steps{display:grid;gap:12px;margin:24px 0 30px}.step{display:flex;gap:12px;padding:16px;border:1px solid var(--line);border-radius:var(--r2);background:var(--panel)}.step b{display:grid;place-items:center;flex:0 0 auto;width:32px;height:32px;border-radius:10px;background:rgba(120,148,255,.12);color:var(--blue)}.step h3{margin:1px 0 4px;font-size:.93rem}.step p{margin:0;color:var(--muted);font-size:.82rem;line-height:1.48}.card{margin-top:18px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);overflow:hidden;box-shadow:0 24px 68px rgba(0,0,0,.26)}.card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;padding:22px;border-bottom:1px solid var(--line)}.card-head h2{margin:0 0 6px;font-size:1.2rem}.card-head p{margin:0;color:var(--muted);font-size:.86rem;line-height:1.5}.pill{flex:0 0 auto;padding:7px 10px;border-radius:999px;background:rgba(82,221,160,.09);color:var(--green);font-size:.66rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}.body{padding:18px}.actions{display:grid;gap:10px}.btn{display:flex;align-items:center;justify-content:center;min-height:52px;padding:12px 15px;border:1px solid rgba(120,148,255,.3);border-radius:14px;background:linear-gradient(135deg,rgba(120,148,255,.22),rgba(90,216,246,.12));color:white;cursor:pointer;font-weight:820;text-decoration:none}.btn.secondary{background:rgba(255,255,255,.035);border-color:var(--line);color:#dae3f3}.install{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}.install h3{margin:0 0 9px;font-size:.9rem}.tabs{display:flex;gap:8px;margin-bottom:9px}.tab{padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;font-size:.75rem;font-weight:800}.tab.active{color:var(--text);border-color:rgba(120,148,255,.3);background:rgba(120,148,255,.1)}.codebox{position:relative;border:1px solid var(--line);border-radius:13px;background:#050812;overflow:hidden}pre{margin:0;padding:15px 46px 15px 14px;overflow:auto;color:#d8e3ff;font:500 .75rem/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;word-break:break-word}.copy{position:absolute;top:8px;right:8px;width:31px;height:31px;border:1px solid var(--line);border-radius:9px;background:#11182a;color:#bac6dc;cursor:pointer}.note{margin:9px 0 0;color:var(--muted);font-size:.78rem;line-height:1.5}.ok{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}.section-title{margin:38px 0 14px;font-size:1.42rem;letter-spacing:-.035em}.grid{display:grid;gap:12px}.browser{border:1px solid var(--line);border-radius:var(--r2);background:var(--panel);overflow:hidden}.browser summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:17px;cursor:pointer;font-weight:840}.browser summary::-webkit-details-marker{display:none}.browser summary:after{content:"＋";color:var(--muted);font-size:1.1rem}.browser[open] summary:after{content:"−"}.browser-body{padding:0 17px 17px;border-top:1px solid var(--line)}.os{margin-top:14px}.os h3{margin:0 0 8px;font-size:.87rem}.path{display:flex;align-items:flex-start;gap:8px;margin:7px 0;padding:10px;border:1px solid var(--line);border-radius:11px;background:#080d19;color:#cbd8ee;font:500 .72rem/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all}.path button{margin-left:auto;flex:0 0 auto;border:0;background:transparent;color:var(--cyan);cursor:pointer;font-size:.71rem;font-weight:850}.android{border-color:rgba(255,189,89,.2)}.android .browser-body{background:rgba(255,189,89,.025)}.matrix{width:100%;border-collapse:collapse;font-size:.78rem}.matrix th,.matrix td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.matrix th{color:#dfe6f6}.matrix td{color:var(--muted)}.convert{display:grid;gap:10px}.filebox{padding:17px;border:1px dashed rgba(120,148,255,.3);border-radius:14px;background:rgba(120,148,255,.045)}.filebox input{width:100%;color:var(--muted)}.result{min-height:22px;margin-top:8px;font-size:.8rem;color:var(--muted)}.sources{margin-top:32px;padding:18px;border:1px solid var(--line);border-radius:var(--r2);background:rgba(255,255,255,.025);color:var(--muted);font-size:.75rem;line-height:1.55}.sources h2{margin:0 0 8px;color:var(--text);font-size:.9rem}.sources a{color:#bdcaff}footer{margin-top:22px;color:#73809b;font-size:.72rem;text-align:center}@media(min-width:720px){.steps{grid-template-columns:repeat(3,1fr)}.actions{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}.shell{padding-inline:28px}.body{padding:22px}}@media(hover:hover) and (pointer:fine){.btn:hover{transform:translateY(-1px);border-color:rgba(120,148,255,.52)}.back:hover{color:var(--text)}}
   </style>
 </head>
 <body>
-  <main class="shell">
-    <div class="top">
-      <a class="back" href="./">← Project Hub</a>
-      <span class="status">Client-side rescue</span>
-    </div>
+<main class="shell">
+  <div class="top"><a class="back" href="./">← Project Hub</a><span class="status">Client-side rescue</span></div>
+  <header class="hero">
+    <p class="eyebrow">BO2026 · Notfallmodus</p>
+    <h1>Vercel tot?<br>Dossier trotzdem retten.</h1>
+    <p>Der BO2026-Arbeitsstand liegt im <strong>Browserprofil</strong>. Dieses Kit liest <strong>bo2026.vercel.app</strong> lokal aus und erzeugt neben einem Rohbackup jetzt auch direkt eine <strong>BO2026-importierbare Dossier-JSON</strong>.</p>
+  </header>
 
-    <header class="hero">
-      <p class="eyebrow">BO2026 · Notfallmodus</p>
-      <h1>Vercel tot?<br>Daten trotzdem retten.</h1>
-      <p>BO2026 speichert den Arbeitsstand im <strong>Browserprofil</strong>. Diese Seite hilft dir, die Daten von <strong>bo2026.vercel.app</strong> direkt aus Chrome, Edge, Firefox oder Safari zu retten – ohne dass Vercel erreichbar sein muss.</p>
-    </header>
+  <div class="alert"><div class="mark">!</div><div><h2>Browser zuerst komplett beenden.</h2><p>Das Desktop-Skript liest nur. Es verändert das Browserprofil nicht. Chrome Android ist ein Sonderfall – siehe unten.</p></div></div>
 
-    <div class="danger">
-      <div class="mark">!</div>
-      <div><h2>Erste Regel: Browser komplett beenden.</h2><p>Nicht im Live-Profil herumprobieren. Erst Browser schließen, dann Daten auslesen. Das Recovery-Skript liest nur; es verändert keine Browserdaten.</p></div>
-    </div>
+  <section class="steps">
+    <div class="step"><b>1</b><div><h3>Browser schließen</h3><p>Chrome, Edge, Brave, Vivaldi, Opera, Firefox oder Safari vollständig beenden.</p></div></div>
+    <div class="step"><b>2</b><div><h3>Recovery starten</h3><p>Das Skript durchsucht die üblichen Profile nach dem BO2026-Origin.</p></div></div>
+    <div class="step"><b>3</b><div><h3>Projekt laden</h3><p><code>Bewerbungsdossier-RECOVERED-*.json</code> danach in BO2026 über „Projekt laden“ öffnen.</p></div></div>
+  </section>
 
-    <section class="steps" aria-label="Recovery workflow">
-      <div class="step"><b>1</b><div><h3>Browser schließen</h3><p>Chrome / Edge / Firefox / Safari wirklich beenden, damit Datenbanken konsistent und nicht gesperrt sind.</p></div></div>
-      <div class="step"><b>2</b><div><h3>Script starten</h3><p>Das Script sucht automatisch bekannte Profile und nur nach BO2026-relevanten LocalStorage-Daten.</p></div></div>
-      <div class="step"><b>3</b><div><h3>JSON sichern</h3><p>Gefundene Stände landen als einzelne JSON-Dateien plus Manifest auf dem Desktop.</p></div></div>
-    </section>
-
-    <section class="tool">
-      <div class="tool-head">
-        <div><h2>Universal BO2026 Recovery Script</h2><p>Windows + macOS · Chrome · Edge · Firefox · Safari</p></div>
-        <span class="pill">Recommended</span>
+  <section class="card">
+    <div class="card-head"><div><h2>Universal BO2026 Recovery</h2><p>Chrome · Edge · Brave · Vivaldi · Opera / Opera GX · Firefox · Safari</p></div><span class="pill">Recommended</span></div>
+    <div class="body">
+      <div class="actions"><button class="btn" id="downloadScript">↓ bo2026_recover.py herunterladen</button><button class="btn secondary" id="copyScript">⧉ Python-Skript kopieren</button></div>
+      <div class="install">
+        <h3>Einmalige Vorbereitung</h3>
+        <div class="tabs"><button class="tab active" data-os="win">Windows</button><button class="tab" data-os="mac">macOS</button></div>
+        <div class="codebox"><pre id="installCmd">py -m pip install "git+https://github.com/cclgroupltd/ccl_chromium_reader.git" python-snappy</pre><button class="copy" data-copy="#installCmd">⧉</button></div>
       </div>
-      <div class="tool-body">
-        <div class="actions">
-          <button class="btn" id="downloadScript">↓ bo2026_recover.py herunterladen</button>
-          <button class="btn secondary" id="copyScript">⧉ Python-Script kopieren</button>
-        </div>
-        <div class="install">
-          <h3>Einmalige Vorbereitung</h3>
-          <div class="tabs"><button class="tab active" data-os="win">Windows</button><button class="tab" data-os="mac">macOS</button></div>
-          <div class="codebox"><pre id="installCmd">py -m pip install "git+https://github.com/cclgroupltd/ccl_chromium_reader.git" python-snappy</pre><button class="copy" data-copy="#installCmd" title="Kopieren">⧉</button></div>
-          <p class="note">Die Zusatzmodule werden für Chromium-LevelDB und komprimierte Firefox-Werte benötigt. Ist nur Vercel ausgefallen, kann die Installation weiterhin über GitHub/PyPI erfolgen.</p>
-        </div>
-        <div class="install">
-          <h3>Start</h3>
-          <div class="codebox"><pre id="runCmd">py bo2026_recover.py</pre><button class="copy" data-copy="#runCmd" title="Kopieren">⧉</button></div>
-          <p class="note">Ergebnis: <code>Desktop/BO2026-Recovery-YYYYMMDD-HHMMSS/</code>. Das Script scannt alle üblichen Profile und erstellt pro Fund eine JSON-Datei.</p>
-        </div>
-      </div>
-    </section>
-
-    <h2 class="section-title">Wo liegen die Daten?</h2>
-    <section class="browser-grid">
-      <details class="browser" open>
-        <summary>Chrome</summary>
-        <div class="browser-body">
-          <div class="os"><h3>Windows</h3><div class="path"><span>%LOCALAPPDATA%\Google\Chrome\User Data\Default\Local Storage\leveldb</span><button>Copy</button></div><p class="note">Weitere Profile liegen unter <code>Profile 1</code>, <code>Profile 2</code> usw.</p></div>
-          <div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/Google/Chrome/Default/Local Storage/leveldb</span><button>Copy</button></div></div>
-        </div>
-      </details>
-
-      <details class="browser">
-        <summary>Microsoft Edge</summary>
-        <div class="browser-body">
-          <div class="os"><h3>Windows</h3><div class="path"><span>%LOCALAPPDATA%\Microsoft\Edge\User Data\Default\Local Storage\leveldb</span><button>Copy</button></div></div>
-          <div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/Microsoft Edge/Default/Local Storage/leveldb</span><button>Copy</button></div></div>
-        </div>
-      </details>
-
-      <details class="browser">
-        <summary>Firefox</summary>
-        <div class="browser-body">
-          <div class="os"><h3>Windows</h3><div class="path"><span>%APPDATA%\Mozilla\Firefox\Profiles\&lt;profil&gt;\storage\default\https+++bo2026.vercel.app\ls\data.sqlite</span><button>Copy</button></div></div>
-          <div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/Firefox/Profiles/&lt;profil&gt;/storage/default/https+++bo2026.vercel.app/ls/data.sqlite</span><button>Copy</button></div></div>
-          <p class="note">Firefox kann Werte in <code>data.sqlite</code> mit Snappy komprimieren. Das Recovery-Skript berücksichtigt das.</p>
-        </div>
-      </details>
-
-      <details class="browser">
-        <summary>Safari</summary>
-        <div class="browser-body">
-          <div class="os"><h3>macOS · aktuelles Safari</h3><div class="path"><span>~/Library/Containers/com.apple.Safari/Data/Library/WebKit/WebsiteData/</span><button>Copy</button></div><p class="note"><span class="warn">Falls macOS den Zugriff verweigert:</span> Terminal unter Systemeinstellungen → Datenschutz &amp; Sicherheit → Festplattenvollzugriff erlauben. Moderne Safari-Versionen nutzen WebKit-WebsiteData und können mehrere Profile besitzen.</p></div>
-          <div class="os"><h3>Windows · nur altes Safari</h3><div class="path"><span>%APPDATA%\Apple Computer\Safari\LocalStorage</span><button>Copy</button></div><div class="path"><span>%APPDATA%\Apple\Safari\LocalStorage</span><button>Copy</button></div><p class="note"><span class="warn">Legacy-Fall:</span> Apple bietet Safari für Windows nicht mehr an. Das Script scannt diese alten Speicherorte trotzdem.</p></div>
-        </div>
-      </details>
-    </section>
-
-    <div class="sources">
-      <h2>Was wird gesucht?</h2>
-      <div>Origin: <code>https://bo2026.vercel.app</code> · bekannte BO/CV-Cover-Charm-Schlüssel wie <code>titelblatt:v3</code>, <code>anschreiben:v1</code>, <code>lebenslauf:v1</code>, <code>bewerbungsdossier:chrome:v1</code> und die CV-Layout-/Foto-Sidecars.</div>
-      <br>
-      <div>Technische Referenzen: <a href="https://github.com/cclgroupltd/ccl_chromium_reader" target="_blank" rel="noopener">CCL Chromium Reader</a> · <a href="https://support.mozilla.org/de/kb/benutzerprofile-mit-ihren-persoenlichen-daten" target="_blank" rel="noopener">Firefox Profile</a> · <a href="https://support.apple.com/de-ch/102665" target="_blank" rel="noopener">Safari / Apple</a></div>
+      <div class="install"><h3>Start</h3><div class="codebox"><pre id="runCmd">py bo2026_recover.py</pre><button class="copy" data-copy="#runCmd">⧉</button></div><p class="note">Ausgabe auf dem Desktop: Rohbackup <code>*-RAW.json</code> + direkt importierbares <code>Bewerbungsdossier-RECOVERED-*.json</code> + <code>manifest.json</code>.</p></div>
     </div>
+  </section>
 
-    <footer>BO2026 Emergency Recovery · modebrecht.github.io</footer>
-  </main>
+  <section class="card">
+    <div class="card-head"><div><h2>Schon ein altes RAW-Backup?</h2><p>Konvertiert die bisherige Emergency-JSON direkt im Browser in das offizielle CV-Cover-Charm-Projektformat. Keine Datei wird hochgeladen.</p></div><span class="pill">Offline logic</span></div>
+    <div class="body convert"><div class="filebox"><input id="rawInput" type="file" accept="application/json,.json"><div class="result" id="convertResult">Wähle eine <code>BO2026-…-RAW.json</code> oder das alte Emergency-localStorage-JSON.</div></div></div>
+  </section>
 
-  <script type="text/plain" id="recoveryPython">#!/usr/bin/env python3
-"""
-BO2026 emergency localStorage recovery.
-Reads browser profiles only. Does not modify them.
-Target: https://bo2026.vercel.app
-"""
+  <h2 class="section-title">Desktop-Browser: Speicherorte</h2>
+  <section class="grid">
+    <details class="browser" open><summary>Google Chrome</summary><div class="browser-body"><div class="os"><h3>Windows</h3><div class="path"><span>%LOCALAPPDATA%\Google\Chrome\User Data\Default\Local Storage\leveldb</span><button>Copy</button></div></div><div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/Google/Chrome/Default/Local Storage/leveldb</span><button>Copy</button></div></div></div></details>
+    <details class="browser"><summary>Microsoft Edge</summary><div class="browser-body"><div class="os"><h3>Windows</h3><div class="path"><span>%LOCALAPPDATA%\Microsoft\Edge\User Data\Default\Local Storage\leveldb</span><button>Copy</button></div></div><div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/Microsoft Edge/Default/Local Storage/leveldb</span><button>Copy</button></div></div></div></details>
+    <details class="browser"><summary>Brave</summary><div class="browser-body"><div class="os"><h3>Windows</h3><div class="path"><span>%LOCALAPPDATA%\BraveSoftware\Brave-Browser\User Data\Default\Local Storage\leveldb</span><button>Copy</button></div></div><div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/BraveSoftware/Brave-Browser/Default/Local Storage/leveldb</span><button>Copy</button></div></div></div></details>
+    <details class="browser"><summary>Vivaldi</summary><div class="browser-body"><div class="os"><h3>Windows</h3><div class="path"><span>%LOCALAPPDATA%\Vivaldi\User Data\Default\Local Storage\leveldb</span><button>Copy</button></div></div><div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/Vivaldi/Default/Local Storage/leveldb</span><button>Copy</button></div></div></div></details>
+    <details class="browser"><summary>Opera / Opera GX</summary><div class="browser-body"><div class="os"><h3>Windows</h3><div class="path"><span>%APPDATA%\Opera Software\Opera Stable\Local Storage\leveldb</span><button>Copy</button></div><div class="path"><span>%APPDATA%\Opera Software\Opera GX Stable\Local Storage\leveldb</span><button>Copy</button></div></div><div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/com.operasoftware.Opera/Local Storage/leveldb</span><button>Copy</button></div><div class="path"><span>~/Library/Application Support/com.operasoftware.OperaGX/Local Storage/leveldb</span><button>Copy</button></div></div></div></details>
+    <details class="browser"><summary>Firefox</summary><div class="browser-body"><div class="os"><h3>Windows</h3><div class="path"><span>%APPDATA%\Mozilla\Firefox\Profiles\&lt;profil&gt;\storage\default\https+++bo2026.vercel.app\ls\data.sqlite</span><button>Copy</button></div></div><div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/Firefox/Profiles/&lt;profil&gt;/storage/default/https+++bo2026.vercel.app/ls/data.sqlite</span><button>Copy</button></div></div><p class="note">Snappy-komprimierte Firefox-Werte werden vom Recovery-Skript berücksichtigt.</p></div></details>
+    <details class="browser"><summary>Safari</summary><div class="browser-body"><div class="os"><h3>macOS · aktuell</h3><div class="path"><span>~/Library/Containers/com.apple.Safari/Data/Library/WebKit/WebsiteData/</span><button>Copy</button></div><p class="note">Falls macOS blockiert: Terminal unter Datenschutz &amp; Sicherheit → Festplattenvollzugriff freigeben.</p></div><div class="os"><h3>Windows · Legacy Safari</h3><div class="path"><span>%APPDATA%\Apple Computer\Safari\LocalStorage</span><button>Copy</button></div><p class="note"><span class="warn">Nur Altbestand:</span> Safari für Windows wird seit Jahren nicht mehr weiterentwickelt.</p></div></div></details>
+  </section>
+
+  <h2 class="section-title">Chrome Android</h2>
+  <section class="grid">
+    <details class="browser android" open><summary>Ohne Root · BO-Tab lebt noch</summary><div class="browser-body"><p class="note"><span class="ok">Beste Chance ohne Root:</span> Android per USB an einen PC/Mac anschließen, USB-Debugging aktivieren und den noch geöffneten BO2026-Tab über Desktop-Chrome remote inspizieren.</p><div class="os"><h3>Desktop Chrome</h3><div class="path"><span>chrome://inspect/#devices</span><button>Copy</button></div></div><p class="note">Beim BO2026-Tab auf <strong>Inspect</strong> → Application → Local Storage → <code>https://bo2026.vercel.app</code>. Alternativ in der Console den LocalStorage exportieren. Funktioniert nur, wenn ein passender Tab/Context noch existiert.</p></div></details>
+    <details class="browser android"><summary>Ohne Root · kein BO-Tab mehr</summary><div class="browser-body"><p class="note"><span class="bad">Kein verlässlicher Direktzugriff.</span> Android schützt Chromes internes App-Verzeichnis. Ein normaler Dateimanager, eine andere App oder ein gewöhnlicher ADB-Zugriff kann den Chrome-LocalStorage nicht einfach lesen. Auf Android 12+ ist auch <code>adb backup</code> für solche App-Daten keine allgemeine Rettungslösung.</p><p class="note">Wichtig: Chrome nicht deinstallieren und „App-Daten löschen“ nicht drücken – dabei können die lokalen Daten verschwinden.</p></div></details>
+    <details class="browser android"><summary>Mit Root · echte Profilrettung</summary><div class="browser-body"><div class="os"><h3>Chrome App-Daten</h3><div class="path"><span>/data/user/0/com.android.chrome/app_chrome/Default/Local Storage/leveldb</span><button>Copy</button></div></div><div class="os"><h3>Beispiel via ADB + su</h3><div class="codebox"><pre id="androidRootCmd">adb shell su -c 'tar -czf /sdcard/Download/bo2026-chrome-leveldb.tgz -C /data/user/0/com.android.chrome/app_chrome/Default "Local Storage/leveldb"'
+adb pull /sdcard/Download/bo2026-chrome-leveldb.tgz</pre><button class="copy" data-copy="#androidRootCmd">⧉</button></div></div><p class="note">Danach Archiv am PC entpacken und den enthaltenen <code>leveldb</code>-Ordner mit demselben Chromium-Reader auswerten.</p></div></details>
+    <details class="browser android"><summary>Android · was ist realistisch?</summary><div class="browser-body"><table class="matrix"><tr><th>Situation</th><th>Chance</th></tr><tr><td>BO-Tab noch offen</td><td class="ok">Gut – Remote DevTools</td></tr><tr><td>Vercel tot, Tab weg, kein Root</td><td class="bad">Kein verlässlicher Profilzugriff</td></tr><tr><td>Gerootetes Gerät</td><td class="ok">Direkte LevelDB-Rettung möglich</td></tr><tr><td>Chrome deinstalliert / App-Daten gelöscht</td><td class="bad">Lokale Daten meist verloren</td></tr></table></div></details>
+  </section>
+
+  <div class="sources"><h2>Was wird gerettet?</h2><div>Origin <code>https://bo2026.vercel.app</code>. Bekannte Schlüssel: <code>titelblatt:v3</code>, <code>anschreiben:v1</code>, <code>lebenslauf:v1</code>, <code>bewerbungsdossier:chrome:v1</code> plus Layout-, Placement- und Foto-Sidecars.</div><br><div>Das importierbare Recovery-JSON entspricht dem BO2026/CV-Cover-Charm-Projektformat <code>cv-cover-charm-dossier</code> Version 1.</div><br><div>Referenzen: <a href="https://chromium.googlesource.com/chromium/src/+/HEAD/docs/user_data_dir.md" target="_blank" rel="noopener">Chromium User Data</a> · <a href="https://developer.android.com/training/data-storage/app-specific" target="_blank" rel="noopener">Android App Storage</a> · <a href="https://developer.chrome.com/docs/devtools/remote-debugging/" target="_blank" rel="noopener">Chrome Remote Debugging</a> · <a href="https://github.com/cclgroupltd/ccl_chromium_reader" target="_blank" rel="noopener">CCL Chromium Reader</a></div></div>
+  <footer>BO2026 Emergency Recovery · modebrecht.github.io</footer>
+</main>
+
+<script type="text/plain" id="recoveryPython">#!/usr/bin/env python3
 from __future__ import annotations
-
-import base64
-import json
-import os
-import platform
-import sqlite3
-import sys
+import base64,json,os,platform,sqlite3,sys
 from datetime import datetime
 from pathlib import Path
-
-HOST = "bo2026.vercel.app"
-ORIGIN = "https://bo2026.vercel.app"
-KEY_HINTS = (
-    "titelblatt:v3",
-    "anschreiben:v1",
-    "lebenslauf:v1",
-    "bewerbungsdossier:chrome:v1",
-    "lebenslauf:layout:v1",
-    "lebenslauf:layout-mirror:v1",
-    "lebenslauf:section-gap:v1",
-    "lebenslauf:placement:v1",
-    "lebenslauf:photo:v2",
-    "lebenslauf:photo-place:v1",
-)
-
-STAMP = datetime.now().strftime("%Y%m%d-%H%M%S")
-DESKTOP = Path.home() / "Desktop"
-if not DESKTOP.exists():
-    DESKTOP = Path.home()
-OUT = DESKTOP / f"BO2026-Recovery-{STAMP}"
-OUT.mkdir(parents=True, exist_ok=True)
-
-MANIFEST = {
-    "target": ORIGIN,
-    "createdAt": datetime.now().astimezone().isoformat(),
-    "computer": platform.platform(),
-    "recoveries": [],
-    "warnings": [],
-}
-
-
-def safe_name(text: str) -> str:
-    return "".join(c if c.isalnum() or c in "-_." else "_" for c in text)
-
-
-def blob_to_text(value, conversion_type=None, compression_type=None):
-    if isinstance(value, str):
-        return value
-    if value is None:
-        return ""
-    data = bytes(value)
-    if compression_type == 1:
+HOST="bo2026.vercel.app"; ORIGIN="https://bo2026.vercel.app"; KIND="cv-cover-charm-dossier"; VERSION=1
+KEYS={"cover":"titelblatt:v3","letter":"anschreiben:v1","cv":"lebenslauf:v1","chrome":"bewerbungsdossier:chrome:v1"}
+CV_KEYS={"layout":"lebenslauf:layout:v1","mirrored":"lebenslauf:layout-mirror:v1","sectionGapMm":"lebenslauf:section-gap:v1","placements":"lebenslauf:placement:v1","photoStyle":"lebenslauf:photo:v2","photoPlacement":"lebenslauf:photo-place:v1"}
+KEY_HINTS=tuple(KEYS.values())+tuple(CV_KEYS.values()); STAMP=datetime.now().strftime("%Y%m%d-%H%M%S")
+DESKTOP=Path.home()/"Desktop"; DESKTOP=DESKTOP if DESKTOP.exists() else Path.home(); OUT=DESKTOP/f"BO2026-Recovery-{STAMP}"; OUT.mkdir(parents=True,exist_ok=True)
+MANIFEST={"target":ORIGIN,"createdAt":datetime.now().astimezone().isoformat(),"computer":platform.platform(),"recoveries":[],"warnings":[]}
+def safe_name(s): return "".join(c if c.isalnum() or c in "-_." else "_" for c in str(s))
+def blob_to_text(value,conversion_type=None,compression_type=None):
+    if isinstance(value,str): return value
+    if value is None: return ""
+    data=bytes(value)
+    if compression_type==1:
         try:
-            import snappy
-            data = snappy.decompress(data)
+            import snappy; data=snappy.decompress(data)
         except Exception as exc:
-            MANIFEST["warnings"].append(f"Firefox Snappy decode failed: {exc}")
-            return "__BASE64__:" + base64.b64encode(data).decode("ascii")
-
-    encodings = []
-    if conversion_type == 1:
-        encodings = ["utf-8"]
-    elif conversion_type == 0:
-        encodings = ["utf-16-be", "utf-16-le", "utf-8"]
-    else:
-        encodings = ["utf-8", "utf-16-le", "utf-16-be"]
-
-    for enc in encodings:
-        try:
-            return data.decode(enc)
-        except Exception:
-            pass
-    return "__BASE64__:" + base64.b64encode(data).decode("ascii")
-
-
-def save_recovery(browser: str, profile: str, origin: str, items: dict, source: str):
-    if not items:
-        return
-    payload = {
-        "kind": "bo2026-emergency-localstorage",
-        "version": 1,
-        "browser": browser,
-        "profile": profile,
-        "origin": origin,
-        "source": source,
-        "recoveredAt": datetime.now().astimezone().isoformat(),
-        "localStorage": items,
-    }
-    filename = f"BO2026-{safe_name(browser)}-{safe_name(profile)}.json"
-    path = OUT / filename
-    i = 2
-    while path.exists():
-        path = OUT / f"BO2026-{safe_name(browser)}-{safe_name(profile)}-{i}.json"
-        i += 1
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    MANIFEST["recoveries"].append({
-        "browser": browser,
-        "profile": profile,
-        "origin": origin,
-        "keys": len(items),
-        "file": path.name,
-        "source": source,
-    })
-    print(f"[FOUND] {browser} / {profile}: {len(items)} keys -> {path.name}")
-
-
-def chromium_roots():
-    home = Path.home()
-    if os.name == "nt":
-        local = Path(os.environ.get("LOCALAPPDATA", home / "AppData" / "Local"))
-        return [
-            ("Chrome", local / "Google" / "Chrome" / "User Data"),
-            ("Edge", local / "Microsoft" / "Edge" / "User Data"),
-        ]
-    if sys.platform == "darwin":
-        app = home / "Library" / "Application Support"
-        return [
-            ("Chrome", app / "Google" / "Chrome"),
-            ("Edge", app / "Microsoft Edge"),
-        ]
-    return []
-
-
-def scan_chromium():
+            MANIFEST["warnings"].append(f"Firefox Snappy decode failed: {exc}"); return "__BASE64__:"+base64.b64encode(data).decode("ascii")
+    encs=["utf-8","utf-16-le","utf-16-be"] if conversion_type!=0 else ["utf-16-be","utf-16-le","utf-8"]
+    for enc in encs:
+        try: return data.decode(enc)
+        except Exception: pass
+    return "__BASE64__:"+base64.b64encode(data).decode("ascii")
+def parse_record(text):
+    if not isinstance(text,str) or text.startswith("__BASE64__:"): return None
     try:
-        from ccl_chromium_reader import ccl_chromium_localstorage
-    except Exception as exc:
-        MANIFEST["warnings"].append(
-            "Chromium reader unavailable; Chrome/Edge skipped. "
-            "Install ccl_chromium_reader first. Error: " + str(exc)
-        )
-        return
-
-    for browser, root in chromium_roots():
-        if not root.exists():
-            continue
-        try:
-            profiles = [p for p in root.iterdir() if p.is_dir() and (p / "Local Storage" / "leveldb").exists()]
-        except Exception as exc:
-            MANIFEST["warnings"].append(f"Cannot enumerate {browser} profiles: {exc}")
-            continue
-
-        for profile in profiles:
-            db_path = profile / "Local Storage" / "leveldb"
+        v=json.loads(text); return v if isinstance(v,dict) else None
+    except Exception: return None
+def build_project(items):
+    p={"kind":KIND,"version":VERSION,"savedAt":datetime.now().astimezone().isoformat()}
+    cover=parse_record(items.get(KEYS["cover"])); letter=parse_record(items.get(KEYS["letter"])); cv=parse_record(items.get(KEYS["cv"])); chrome=parse_record(items.get(KEYS["chrome"]))
+    if cover and isinstance(cover.get("data"),dict): p["cover"]=cover
+    if letter and isinstance(letter.get("data"),dict): p["letter"]=letter
+    if cv and isinstance(cv.get("data"),dict):
+        portable={}; layout=items.get(CV_KEYS["layout"])
+        if layout in {"classic","modern","minimal","timeline","editorial"}: portable["layout"]=layout
+        elif layout=="executive": portable["layout"]="modern"
+        mirrored=items.get(CV_KEYS["mirrored"])
+        if mirrored is not None: portable["mirrored"]=str(mirrored).lower()=="true"
+        gap=items.get(CV_KEYS["sectionGapMm"])
+        if gap not in (None,""):
+            try: portable["sectionGapMm"]=float(gap)
+            except Exception: pass
+        for field in ("placements","photoStyle","photoPlacement"):
+            v=parse_record(items.get(CV_KEYS[field]));
+            if v is not None: portable[field]=v
+        if portable: cv={**cv,"portableState":portable}
+        p["cv"]=cv
+    if chrome: p["chrome"]=chrome
+    return p if any(k in p for k in ("cover","letter","cv")) else None
+def save_recovery(browser,profile,origin,items,source):
+    if not items: return
+    stem=f"BO2026-{safe_name(browser)}-{safe_name(profile)}"; raw={"kind":"bo2026-emergency-localstorage","version":2,"browser":browser,"profile":profile,"origin":origin,"source":source,"recoveredAt":datetime.now().astimezone().isoformat(),"localStorage":items}
+    raw_path=OUT/f"{stem}-RAW.json"; n=2
+    while raw_path.exists(): raw_path=OUT/f"{stem}-RAW-{n}.json"; n+=1
+    raw_path.write_text(json.dumps(raw,ensure_ascii=False,indent=2),encoding="utf-8"); project=build_project(items); project_path=None
+    if project:
+        project_path=OUT/f"Bewerbungsdossier-RECOVERED-{safe_name(browser)}-{safe_name(profile)}.json"; n=2
+        while project_path.exists(): project_path=OUT/f"Bewerbungsdossier-RECOVERED-{safe_name(browser)}-{safe_name(profile)}-{n}.json"; n+=1
+        project_path.write_text(json.dumps(project,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    MANIFEST["recoveries"].append({"browser":browser,"profile":profile,"origin":origin,"keys":len(items),"rawFile":raw_path.name,"importableFile":project_path.name if project_path else None,"source":source}); print(f"[FOUND] {browser} / {profile}: {len(items)} keys")
+def chromium_roots():
+    home=Path.home(); roots=[]
+    if os.name=="nt":
+        local=Path(os.environ.get("LOCALAPPDATA",home/"AppData"/"Local")); roaming=Path(os.environ.get("APPDATA",home/"AppData"/"Roaming")); roots=[("Chrome",local/"Google"/"Chrome"/"User Data"),("Edge",local/"Microsoft"/"Edge"/"User Data"),("Brave",local/"BraveSoftware"/"Brave-Browser"/"User Data"),("Vivaldi",local/"Vivaldi"/"User Data"),("Opera",roaming/"Opera Software"/"Opera Stable"),("Opera GX",roaming/"Opera Software"/"Opera GX Stable")]
+    elif sys.platform=="darwin":
+        app=home/"Library"/"Application Support"; roots=[("Chrome",app/"Google"/"Chrome"),("Edge",app/"Microsoft Edge"),("Brave",app/"BraveSoftware"/"Brave-Browser"),("Vivaldi",app/"Vivaldi"),("Opera",app/"com.operasoftware.Opera"),("Opera GX",app/"com.operasoftware.OperaGX")]
+    return roots
+def find_chromium_profiles(root):
+    candidates=[root,root/"Default",root/"Guest Profile"]
+    if root.exists():
+        try: candidates += [p for p in root.iterdir() if p.is_dir() and p.name.startswith("Profile ")]
+        except Exception: pass
+    seen=set()
+    for p in candidates:
+        if (p/"Local Storage"/"leveldb").exists() and str(p) not in seen: seen.add(str(p)); yield p
+def scan_chromium():
+    try: from ccl_chromium_reader import ccl_chromium_localstorage
+    except Exception as exc: MANIFEST["warnings"].append("Chromium reader unavailable: "+str(exc)); return
+    for browser,root in chromium_roots():
+        if not root.exists(): continue
+        for profile in find_chromium_profiles(root):
+            db_path=profile/"Local Storage"/"leveldb"
             try:
                 with ccl_chromium_localstorage.LocalStoreDb(db_path) as db:
                     for storage_key in db.iter_storage_keys():
-                        if HOST not in str(storage_key):
-                            continue
-                        items = {}
-                        for record in db.iter_records_for_storage_key(storage_key):
-                            items[str(record.script_key)] = blob_to_text(record.value)
-                        save_recovery(browser, profile.name, str(storage_key), items, str(db_path))
-            except Exception as exc:
-                MANIFEST["warnings"].append(f"{browser} {profile.name}: {exc}")
-
-
+                        if HOST not in str(storage_key): continue
+                        items={str(r.script_key):blob_to_text(r.value) for r in db.iter_records_for_storage_key(storage_key)}; save_recovery(browser,profile.name,str(storage_key),items,str(db_path))
+            except Exception as exc: MANIFEST["warnings"].append(f"{browser} {profile.name}: {exc}")
 def firefox_roots():
-    home = Path.home()
-    if os.name == "nt":
-        app = Path(os.environ.get("APPDATA", home / "AppData" / "Roaming"))
-        return [app / "Mozilla" / "Firefox" / "Profiles"]
-    if sys.platform == "darwin":
-        return [home / "Library" / "Application Support" / "Firefox" / "Profiles"]
+    home=Path.home()
+    if os.name=="nt": return [Path(os.environ.get("APPDATA",home/"AppData"/"Roaming"))/"Mozilla"/"Firefox"/"Profiles"]
+    if sys.platform=="darwin": return [home/"Library"/"Application Support"/"Firefox"/"Profiles"]
     return []
-
-
-def read_firefox_current(db_path: Path):
-    items = {}
-    con = sqlite3.connect(f"file:{db_path.as_posix()}?mode=ro", uri=True)
+def read_firefox_current(db_path):
+    items={}; con=sqlite3.connect(f"file:{db_path.as_posix()}?mode=ro",uri=True)
     try:
-        rows = con.execute("SELECT key, conversion_type, compression_type, value FROM data")
-        for key, conversion_type, compression_type, value in rows:
-            items[str(key)] = blob_to_text(value, conversion_type, compression_type)
-    finally:
-        con.close()
+        for key,ct,comp,value in con.execute("SELECT key, conversion_type, compression_type, value FROM data"): items[str(key)]=blob_to_text(value,ct,comp)
+    finally: con.close()
     return items
-
-
-def read_firefox_legacy(db_path: Path):
-    found = {}
-    con = sqlite3.connect(f"file:{db_path.as_posix()}?mode=ro", uri=True)
+def read_firefox_legacy(db_path):
+    found={}; con=sqlite3.connect(f"file:{db_path.as_posix()}?mode=ro",uri=True)
     try:
-        cols = [r[1] for r in con.execute("PRAGMA table_info(webappsstore2)")]
-        rows = con.execute("SELECT * FROM webappsstore2")
-        for row in rows:
-            rec = dict(zip(cols, row))
-            scope = " ".join(str(rec.get(k, "")) for k in ("scope", "originKey", "originAttributes"))
-            if HOST not in scope and HOST[::-1] not in scope:
-                continue
-            key = rec.get("key")
-            if key is not None:
-                found[str(key)] = str(rec.get("value", ""))
-    finally:
-        con.close()
+        cols=[r[1] for r in con.execute("PRAGMA table_info(webappsstore2)")]
+        for row in con.execute("SELECT * FROM webappsstore2"):
+            rec=dict(zip(cols,row)); scope=" ".join(str(rec.get(k,"")) for k in ("scope","originKey","originAttributes"))
+            if HOST not in scope and HOST[::-1] not in scope: continue
+            if rec.get("key") is not None: found[str(rec["key"])]=str(rec.get("value",""))
+    finally: con.close()
     return found
-
-
 def scan_firefox():
     for root in firefox_roots():
-        if not root.exists():
-            continue
+        if not root.exists(): continue
         for profile in root.iterdir():
-            if not profile.is_dir():
-                continue
-            storage_default = profile / "storage" / "default"
-            if storage_default.exists():
+            if not profile.is_dir(): continue
+            sd=profile/"storage"/"default"
+            if sd.exists():
                 try:
-                    for origin_dir in storage_default.iterdir():
-                        if HOST not in origin_dir.name:
-                            continue
-                        db_path = origin_dir / "ls" / "data.sqlite"
-                        if db_path.exists():
-                            try:
-                                items = read_firefox_current(db_path)
-                                save_recovery("Firefox", profile.name, ORIGIN, items, str(db_path))
-                            except Exception as exc:
-                                MANIFEST["warnings"].append(f"Firefox {profile.name} current storage: {exc}")
-                except Exception as exc:
-                    MANIFEST["warnings"].append(f"Firefox {profile.name} storage scan: {exc}")
-
-            legacy = profile / "webappsstore.sqlite"
+                    for origin_dir in sd.iterdir():
+                        if HOST not in origin_dir.name: continue
+                        db=origin_dir/"ls"/"data.sqlite"
+                        if db.exists():
+                            try: save_recovery("Firefox",profile.name,ORIGIN,read_firefox_current(db),str(db))
+                            except Exception as exc: MANIFEST["warnings"].append(f"Firefox {profile.name}: {exc}")
+                except Exception as exc: MANIFEST["warnings"].append(f"Firefox scan {profile.name}: {exc}")
+            legacy=profile/"webappsstore.sqlite"
             if legacy.exists():
                 try:
-                    items = read_firefox_legacy(legacy)
-                    if items:
-                        save_recovery("Firefox-legacy", profile.name, ORIGIN, items, str(legacy))
-                except Exception as exc:
-                    MANIFEST["warnings"].append(f"Firefox {profile.name} legacy storage: {exc}")
-
-
-def sqlite_itemtable(db_path: Path):
-    items = {}
-    con = sqlite3.connect(f"file:{db_path.as_posix()}?mode=ro", uri=True)
+                    items=read_firefox_legacy(legacy)
+                    if items: save_recovery("Firefox-legacy",profile.name,ORIGIN,items,str(legacy))
+                except Exception as exc: MANIFEST["warnings"].append(f"Firefox legacy {profile.name}: {exc}")
+def sqlite_itemtable(db_path):
+    items={}; con=sqlite3.connect(f"file:{db_path.as_posix()}?mode=ro",uri=True)
     try:
-        tables = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-        if "ItemTable" not in tables:
-            return {}
-        for key, value in con.execute("SELECT key, value FROM ItemTable"):
-            items[str(key)] = blob_to_text(value)
-    finally:
-        con.close()
+        if "ItemTable" not in {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}: return {}
+        for key,value in con.execute("SELECT key,value FROM ItemTable"): items[str(key)]=blob_to_text(value)
+    finally: con.close()
     return items
-
-
-def looks_like_bo(items: dict, db_path: Path):
-    if any(k in items for k in KEY_HINTS):
-        return True
-    if HOST.lower() in db_path.name.lower():
-        return True
-    # Modern WebKit keeps an adjacent binary origin descriptor.
-    origin_file = db_path.parent.parent / "origin"
+def looks_like_bo(items,db_path):
+    if any(k in items for k in KEY_HINTS) or HOST.lower() in db_path.name.lower(): return True
+    origin_file=db_path.parent.parent/"origin"
     if origin_file.exists():
         try:
-            raw = origin_file.read_bytes()
-            if HOST.encode("utf-8") in raw or HOST.encode("utf-16-le") in raw or HOST.encode("utf-16-be") in raw:
-                return True
-        except Exception:
-            pass
+            raw=origin_file.read_bytes(); return any(HOST.encode(enc) in raw for enc in ("utf-8","utf-16-le","utf-16-be"))
+        except Exception: pass
     return False
-
-
 def safari_candidates():
-    home = Path.home()
-    candidates = []
-    if sys.platform == "darwin":
-        container = home / "Library" / "Containers" / "com.apple.Safari" / "Data" / "Library" / "WebKit"
-        candidates.extend([
-            ("Safari", container / "WebsiteData"),
-            ("Safari", container / "WebsiteDataStore"),
-            ("Safari-legacy", home / "Library" / "Safari" / "LocalStorage"),
-        ])
-    elif os.name == "nt":
-        app = Path(os.environ.get("APPDATA", home / "AppData" / "Roaming"))
-        local = Path(os.environ.get("LOCALAPPDATA", home / "AppData" / "Local"))
-        for base in (app, local):
-            candidates.extend([
-                ("Safari-Windows-legacy", base / "Apple Computer" / "Safari" / "LocalStorage"),
-                ("Safari-Windows-legacy", base / "Apple" / "Safari" / "LocalStorage"),
-            ])
-    return candidates
-
-
-def walk_files(root: Path):
-    def onerror(err):
-        MANIFEST["warnings"].append(f"Cannot access {getattr(err, 'filename', root)}: {err}")
-    for dirpath, _, filenames in os.walk(root, onerror=onerror):
-        for filename in filenames:
-            yield Path(dirpath) / filename
-
-
+    home=Path.home(); c=[]
+    if sys.platform=="darwin":
+        w=home/"Library"/"Containers"/"com.apple.Safari"/"Data"/"Library"/"WebKit"; c=[("Safari",w/"WebsiteData"),("Safari",w/"WebsiteDataStore"),("Safari-legacy",home/"Library"/"Safari"/"LocalStorage")]
+    elif os.name=="nt":
+        app=Path(os.environ.get("APPDATA",home/"AppData"/"Roaming")); local=Path(os.environ.get("LOCALAPPDATA",home/"AppData"/"Local"))
+        for b in (app,local): c += [("Safari-Windows-legacy",b/"Apple Computer"/"Safari"/"LocalStorage"),("Safari-Windows-legacy",b/"Apple"/"Safari"/"LocalStorage")]
+    return c
 def scan_safari():
-    for browser, root in safari_candidates():
-        if not root.exists():
-            continue
-        for path in walk_files(root):
-            if path.name != "localstorage.sqlite3" and path.suffix.lower() != ".localstorage":
-                continue
-            try:
-                items = sqlite_itemtable(path)
-                if items and looks_like_bo(items, path):
-                    profile = path.parent.parent.name if path.name == "localstorage.sqlite3" else "legacy"
-                    save_recovery(browser, profile, ORIGIN, items, str(path))
-            except Exception as exc:
-                # Most Safari DBs belong to unrelated sites; silently ignore non-SQLite/locked files,
-                # but keep permission failures visible.
-                if "permission" in str(exc).lower() or "not authorized" in str(exc).lower():
-                    MANIFEST["warnings"].append(f"Safari access denied for {path}: {exc}")
-
-
+    for browser,root in safari_candidates():
+        if not root.exists(): continue
+        for dirpath,_,files in os.walk(root):
+            for filename in files:
+                path=Path(dirpath)/filename
+                if path.name!="localstorage.sqlite3" and path.suffix.lower()!=".localstorage": continue
+                try:
+                    items=sqlite_itemtable(path)
+                    if items and looks_like_bo(items,path): save_recovery(browser,path.parent.parent.name if path.name=="localstorage.sqlite3" else "legacy",ORIGIN,items,str(path))
+                except Exception as exc:
+                    if "permission" in str(exc).lower() or "authorized" in str(exc).lower(): MANIFEST["warnings"].append(f"Safari access denied {path}: {exc}")
 def main():
-    print("BO2026 emergency recovery")
-    print("Target:", ORIGIN)
-    print("Output:", OUT)
-    print()
-    scan_chromium()
-    scan_firefox()
-    scan_safari()
-
-    manifest_path = OUT / "manifest.json"
-    manifest_path.write_text(json.dumps(MANIFEST, ensure_ascii=False, indent=2), encoding="utf-8")
-    print()
-    if MANIFEST["recoveries"]:
-        print(f"DONE: {len(MANIFEST['recoveries'])} recovery file(s) found.")
-        print("Open:", OUT)
-    else:
-        print("NO BO2026 DATA FOUND.")
-        print("Check manifest.json for warnings and verify the correct OS user/browser profile.")
-    if MANIFEST["warnings"]:
-        print(f"Warnings: {len(MANIFEST['warnings'])} (see manifest.json)")
-
-
-if __name__ == "__main__":
-    main()
+    print("BO2026 emergency recovery"); print("Target:",ORIGIN); print("Output:",OUT); print("Browsers: Chrome, Edge, Brave, Vivaldi, Opera, Firefox, Safari\n"); scan_chromium(); scan_firefox(); scan_safari(); (OUT/"manifest.json").write_text(json.dumps(MANIFEST,ensure_ascii=False,indent=2),encoding="utf-8")
+    if MANIFEST["recoveries"]: print(f"\nDONE: {len(MANIFEST['recoveries'])} source(s). Use Bewerbungsdossier-RECOVERED-*.json in BO2026 -> Projekt laden.\nOpen: {OUT}")
+    else: print("\nNO BO2026 DATA FOUND. Check manifest.json and the correct OS user/browser profile.")
+    if MANIFEST["warnings"]: print(f"Warnings: {len(MANIFEST['warnings'])} (see manifest.json)")
+if __name__=="__main__": main()
 </script>
-
-  <script>
-    const py = document.querySelector('#recoveryPython').textContent;
-    const installCmd = document.querySelector('#installCmd');
-    const runCmd = document.querySelector('#runCmd');
-
-    function flash(el, text='✓'){
-      const old=el.textContent; el.textContent=text; setTimeout(()=>el.textContent=old,900);
-    }
-    async function copyText(text, button){
-      try{await navigator.clipboard.writeText(text);flash(button)}catch{
-        const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();flash(button);
-      }
-    }
-
-    document.querySelector('#downloadScript').addEventListener('click',()=>{
-      const blob=new Blob([py],{type:'text/x-python;charset=utf-8'});
-      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bo2026_recover.py';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-    });
-    document.querySelector('#copyScript').addEventListener('click',e=>copyText(py,e.currentTarget));
-
-    document.querySelectorAll('[data-copy]').forEach(btn=>btn.addEventListener('click',()=>{
-      const el=document.querySelector(btn.dataset.copy);copyText(el.textContent,btn);
-    }));
-    document.querySelectorAll('.path button').forEach(btn=>btn.addEventListener('click',()=>copyText(btn.parentElement.querySelector('span').textContent,btn)));
-
-    document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{
-      document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===tab));
-      if(tab.dataset.os==='mac'){
-        installCmd.textContent='python3 -m pip install "git+https://github.com/cclgroupltd/ccl_chromium_reader.git" python-snappy';
-        runCmd.textContent='python3 bo2026_recover.py';
-      }else{
-        installCmd.textContent='py -m pip install "git+https://github.com/cclgroupltd/ccl_chromium_reader.git" python-snappy';
-        runCmd.textContent='py bo2026_recover.py';
-      }
-    }));
-  </script>
+<script>
+const py=document.querySelector('#recoveryPython').textContent;
+const $=s=>document.querySelector(s);
+function flash(el,t='✓'){const o=el.textContent;el.textContent=t;setTimeout(()=>el.textContent=o,900)}
+async function copyText(text,btn){try{await navigator.clipboard.writeText(text);flash(btn)}catch{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();flash(btn)}}
+$('#downloadScript').onclick=()=>{const b=new Blob([py],{type:'text/x-python;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='bo2026_recover.py';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+$('#copyScript').onclick=e=>copyText(py,e.currentTarget);
+document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copyText($(b.dataset.copy).textContent,b));
+document.querySelectorAll('.path button').forEach(b=>b.onclick=()=>copyText(b.parentElement.querySelector('span').textContent,b));
+document.querySelectorAll('.tab').forEach(tab=>tab.onclick=()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===tab));if(tab.dataset.os==='mac'){$('#installCmd').textContent='python3 -m pip install "git+https://github.com/cclgroupltd/ccl_chromium_reader.git" python-snappy';$('#runCmd').textContent='python3 bo2026_recover.py'}else{$('#installCmd').textContent='py -m pip install "git+https://github.com/cclgroupltd/ccl_chromium_reader.git" python-snappy';$('#runCmd').textContent='py bo2026_recover.py'}});
+const J=s=>{try{const v=JSON.parse(s);return v&&typeof v==='object'&&!Array.isArray(v)?v:null}catch{return null}};
+function projectFromItems(items){const p={kind:'cv-cover-charm-dossier',version:1,savedAt:new Date().toISOString()},cover=J(items['titelblatt:v3']),letter=J(items['anschreiben:v1']),cv0=J(items['lebenslauf:v1']),chrome=J(items['bewerbungsdossier:chrome:v1']);if(cover?.data&&typeof cover.data==='object')p.cover=cover;if(letter?.data&&typeof letter.data==='object')p.letter=letter;if(cv0?.data&&typeof cv0.data==='object'){let cv={...cv0},ps={},layout=items['lebenslauf:layout:v1'];if(['classic','modern','minimal','timeline','editorial'].includes(layout))ps.layout=layout;else if(layout==='executive')ps.layout='modern';if(items['lebenslauf:layout-mirror:v1']!=null)ps.mirrored=String(items['lebenslauf:layout-mirror:v1']).toLowerCase()==='true';const gap=Number(items['lebenslauf:section-gap:v1']);if(Number.isFinite(gap))ps.sectionGapMm=gap;[['placements','lebenslauf:placement:v1'],['photoStyle','lebenslauf:photo:v2'],['photoPlacement','lebenslauf:photo-place:v1']].forEach(([f,k])=>{const v=J(items[k]);if(v)ps[f]=v});if(Object.keys(ps).length)cv.portableState=ps;p.cv=cv}if(chrome)p.chrome=chrome;return(p.cover||p.letter||p.cv)?p:null}
+$('#rawInput').onchange=async e=>{const f=e.target.files?.[0],out=$('#convertResult');if(!f)return;try{const parsed=JSON.parse(await f.text()),items=parsed.localStorage&&typeof parsed.localStorage==='object'?parsed.localStorage:parsed,project=projectFromItems(items);if(!project)throw new Error('Keine gültigen Dossierdaten gefunden');const b=new Blob([JSON.stringify(project,null,2)+'\n'],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Bewerbungsdossier-RECOVERED.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);out.innerHTML='<span class="ok">✓ Importierbare BO2026-Projektdatei erstellt.</span>'}catch(err){out.innerHTML='<span class="bad">✕ '+String(err.message||err)+'</span>'}finally{e.target.value=''}};
+</script>
 </body>
 </html>
