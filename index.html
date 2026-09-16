@@ -59,7 +59,6 @@
     .bo{--accent:var(--blue)} .resources{--accent:var(--green)}
 
     .project-head{display:flex;align-items:flex-start;gap:14px;padding:20px 20px 14px;min-height:84px}
-    .bo .project-head{padding-right:76px}
     .icon{
       display:grid;place-items:center;flex:0 0 auto;width:50px;height:50px;border-radius:16px;color:var(--accent);
       background:color-mix(in srgb,var(--accent) 12%,var(--surface2));border:1px solid color-mix(in srgb,var(--accent) 24%,var(--border));
@@ -69,12 +68,6 @@
     .project h2{margin:1px 0 4px;font-size:1.26rem;letter-spacing:-.03em}
     .project p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.45}
 
-    .priority-star{
-      position:absolute;z-index:3;top:17px;right:17px;display:grid;place-items:center;width:42px;height:42px;
-      border-radius:14px;color:#ffb21a;background:color-mix(in srgb,#ffb21a 15%,var(--surface2));
-      border:1px solid color-mix(in srgb,#ffb21a 34%,var(--border));font-size:1.35rem;line-height:1;
-      box-shadow:0 8px 22px rgba(235,164,25,.16);transform:rotate(5deg);
-    }
 
     .links{display:grid;gap:10px;padding:2px 12px 12px}
     .deploy{
@@ -119,9 +112,8 @@
     @media (min-width:700px){
       .shell{padding-inline:28px}.hero{padding-top:42px;padding-bottom:42px}
       .grid{gap:20px}
-      .project-head{padding:24px 24px 16px}.bo .project-head{padding-right:82px}
+      .project-head{padding:24px 24px 16px}
       .links{padding:3px 16px 16px}
-      .priority-star{top:21px;right:21px}
     }
     @media (min-width:980px){
       .project{width:100%}
@@ -147,7 +139,6 @@
 
     <section class="grid" aria-label="Project links">
       <article class="project bo">
-        <span class="priority-star" title="Aktuell relevant" aria-label="Aktuell relevant">★</span>
         <div class="project-head">
           <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7V5.8A2.8 2.8 0 0 1 10.8 3h2.4A2.8 2.8 0 0 1 16 5.8V7"/><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M3 12h18M9 12v2h6v-2"/></svg></div>
           <div class="project-copy"><h2>Berufliche Orientierung</h2></div>
