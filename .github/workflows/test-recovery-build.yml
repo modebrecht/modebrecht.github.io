@@ -1,8 +1,0 @@
-name: Test Recovery Build
-on:
-  workflow_dispatch:
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo BO2026 recovery build ready
