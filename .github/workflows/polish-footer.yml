@@ -1,0 +1,44 @@
+name: Polish Footer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/polish-footer.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Center and polish footer
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old = '''    footer{display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-top:28px;padding:13px 5px 0;color:var(--muted);font-size:.74rem}\n    .footer-links{display:flex;gap:14px;flex-wrap:wrap}\n    footer a{color:inherit;text-decoration:none;font-weight:700}\n'''
+          new = '''    footer{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;max-width:620px;margin:34px 0 0;padding:18px 6px 0;border-top:1px solid var(--border);color:var(--muted);font-size:.74rem;text-align:center}\n    footer>span{font-weight:760;letter-spacing:.07em}\n    .footer-links{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}\n    footer a{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:6px 11px;border:1px solid var(--border);border-radius:999px;color:inherit;text-decoration:none;font-weight:760;background:color-mix(in srgb,var(--surface2) 56%,transparent);transition:color .18s ease,border-color .18s ease,background .18s ease,transform .18s ease}\n'''
+          if old not in s:
+              raise SystemExit('footer CSS marker not found')
+          s = s.replace(old, new, 1)
+
+          hover = '      .resource-link:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 34%,var(--border));background:color-mix(in srgb,var(--accent) 7%,var(--surface2))}\n'
+          hover_new = hover + '      footer a:hover{transform:translateY(-1px);color:var(--text);border-color:color-mix(in srgb,var(--blue) 28%,var(--border));background:color-mix(in srgb,var(--blue) 6%,var(--surface2))}\n'
+          if hover in s:
+              s = s.replace(hover, hover_new, 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit footer polish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --check
+          git commit -m "Center and polish main hub footer"
+          git push
