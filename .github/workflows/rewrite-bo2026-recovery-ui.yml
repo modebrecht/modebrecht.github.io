@@ -1,0 +1,146 @@
+name: Rewrite BO2026 Recovery UI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/rewrite-bo2026-recovery-ui.yml
+
+permissions:
+  contents: write
+
+jobs:
+  rewrite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Rewrite recovery page as simple wizard
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('bo2026-recovery.html')
+          old = path.read_text(encoding='utf-8')
+          m = re.search(r'<script type="text/plain" id="recoveryPython">(.*?)</script>', old, re.S)
+          if not m:
+              raise SystemExit('embedded recovery script not found')
+          recovery_py = m.group(1).lstrip()
+
+          html = r'''<!doctype html>
+          <html lang="de">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+            <meta name="theme-color" content="#080d18">
+            <meta name="description" content="BO2026 Notfall-Recovery für Vercel und Render.">
+            <title>BO2026 · Daten retten</title>
+            <style>
+              :root{color-scheme:dark;--bg:#070b13;--bg2:#0d1424;--panel:#111a2d;--text:#f5f7ff;--muted:#9aa8c2;--line:rgba(255,255,255,.09);--blue:#7894ff;--cyan:#5ad8f6;--green:#52dda0;--amber:#ffbd59;--red:#ff6577;--r:22px}
+              *{box-sizing:border-box}html{background:var(--bg)}body{margin:0;min-height:100svh;color:var(--text);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 10% 0,rgba(120,148,255,.16),transparent 30%),linear-gradient(155deg,var(--bg),var(--bg2))}button,input{font:inherit}a{color:inherit}.shell{width:min(100%,820px);margin:auto;padding:max(22px,env(safe-area-inset-top)) 16px max(48px,env(safe-area-inset-bottom))}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.back{color:var(--muted);text-decoration:none;font-size:.86rem;font-weight:760}.status{padding:7px 10px;border:1px solid rgba(82,221,160,.22);border-radius:999px;color:var(--green);background:rgba(82,221,160,.07);font-size:.68rem;font-weight:850;text-transform:uppercase;letter-spacing:.05em}.hero{padding:38px 2px 24px}.eyebrow{margin:0 0 10px;color:var(--red);font-size:.72rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}h1{margin:0;font-size:clamp(2.8rem,12vw,5rem);line-height:.92;letter-spacing:-.055em}.hero p{margin:17px 0 0;max-width:650px;color:var(--muted);font-size:1rem;line-height:1.58}.wizard{display:grid;gap:14px}.panel{border:1px solid var(--line);border-radius:var(--r);background:rgba(17,26,45,.9);overflow:hidden}.panel-inner{padding:20px}.step-label{margin:0 0 6px;color:var(--blue);font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.panel h2{margin:0;font-size:1.18rem}.lead{margin:7px 0 0;color:var(--muted);font-size:.86rem;line-height:1.5}.choices{display:grid;gap:10px;margin-top:16px}.choice{width:100%;padding:16px;border:1px solid var(--line);border-radius:15px;background:#0b1221;color:var(--text);text-align:left;cursor:pointer}.choice strong{display:block;font-size:1rem}.choice span{display:block;margin-top:4px;color:var(--muted);font-size:.78rem;word-break:break-all}.choice.active{border-color:rgba(120,148,255,.65);background:rgba(120,148,255,.12);box-shadow:0 0 0 1px rgba(120,148,255,.12) inset}.hidden{display:none!important}.result{padding:20px}.route{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:13px 0 17px;color:var(--muted);font-size:.8rem}.route b{color:var(--text)}.arrow{color:var(--cyan)}.actions{display:grid;gap:10px}.btn{display:flex;min-height:52px;align-items:center;justify-content:center;padding:12px 15px;border:1px solid rgba(120,148,255,.34);border-radius:14px;background:linear-gradient(135deg,rgba(120,148,255,.24),rgba(90,216,246,.12));color:#fff;text-decoration:none;font-weight:850;cursor:pointer;text-align:center}.btn.secondary{border-color:var(--line);background:rgba(255,255,255,.035);color:#dae3f3}.checklist{display:grid;gap:9px;margin:17px 0 0}.check{display:flex;gap:10px;color:#d9e2f2;font-size:.84rem;line-height:1.45}.check b{display:grid;place-items:center;flex:0 0 27px;height:27px;border-radius:9px;background:rgba(82,221,160,.1);color:var(--green)}.notice{margin-top:14px;padding:12px 13px;border:1px solid rgba(255,189,89,.18);border-radius:12px;background:rgba(255,189,89,.055);color:#dfcfb7;font-size:.78rem;line-height:1.5}.ok{color:var(--green)}.bad{color:var(--red)}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em}.cmd{position:relative;margin-top:9px;border:1px solid var(--line);border-radius:12px;background:#060a12;overflow:hidden}.cmd pre{margin:0;padding:13px 44px 13px 13px;overflow:auto;color:#d8e3ff;font:500 .73rem/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;word-break:break-word}.copy{position:absolute;right:8px;top:8px;width:29px;height:29px;border:1px solid var(--line);border-radius:8px;background:#11182a;color:#c6d2e8;cursor:pointer}.small{margin:10px 0 0;color:var(--muted);font-size:.76rem;line-height:1.48}.subtle{margin-top:22px}.subtle summary{cursor:pointer;color:#c8d4ea;font-weight:800;font-size:.9rem}.subtle-body{padding:14px 0 0;color:var(--muted);font-size:.78rem;line-height:1.55}.path{margin:8px 0;padding:10px;border:1px solid var(--line);border-radius:10px;background:#080d19;font:500 .7rem/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;word-break:break-all}.raw{margin-top:14px;padding:15px;border:1px dashed rgba(120,148,255,.28);border-radius:13px}.raw input{width:100%;color:var(--muted)}.raw-result{margin-top:8px;color:var(--muted);font-size:.78rem}.footer{margin-top:28px;color:#697792;font-size:.7rem;text-align:center}@media(min-width:650px){.shell{padding-inline:24px}.choices.two{grid-template-columns:1fr 1fr}.choices.three{grid-template-columns:repeat(3,1fr)}.actions.two{grid-template-columns:1fr 1fr}.panel-inner,.result{padding:24px}}
+            </style>
+          </head>
+          <body>
+          <main class="shell">
+            <div class="top"><a class="back" href="./">← Project Hub</a><span class="status">Notfall-Recovery</span></div>
+            <header class="hero">
+              <p class="eyebrow">BO2026</p>
+              <h1>Daten retten.</h1>
+              <p>Wähle zuerst die <strong>ausgefallene Adresse</strong>. Danach siehst du nur noch den Rettungsweg, den du wirklich brauchst.</p>
+            </header>
+
+            <section class="wizard">
+              <div class="panel">
+                <div class="panel-inner">
+                  <p class="step-label">1 · Quelle</p>
+                  <h2>Welche BO2026-Adresse ist ausgefallen?</h2>
+                  <div class="choices two" id="sourceChoices">
+                    <button class="choice" data-source="vercel"><strong>Vercel</strong><span>bo2026.vercel.app</span></button>
+                    <button class="choice" data-source="render"><strong>Render</strong><span>dev-bo2026.onrender.com</span></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel hidden" id="devicePanel">
+                <div class="panel-inner">
+                  <p class="step-label">2 · Gerät</p>
+                  <h2>Wo hast du auf dieser Adresse gearbeitet?</h2>
+                  <div class="choices three" id="deviceChoices">
+                    <button class="choice" data-device="windows"><strong>🪟 Windows</strong><span>One-Click EXE</span></button>
+                    <button class="choice" data-device="mac"><strong>🍎 macOS</strong><span>Recovery-Skript</span></button>
+                    <button class="choice" data-device="android"><strong>📱 Android</strong><span>Chrome</span></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel hidden" id="resultPanel"><div class="result" id="result"></div></div>
+            </section>
+
+            <details class="subtle">
+              <summary>Ich habe bereits ein RAW-Backup</summary>
+              <div class="subtle-body">
+                Daraus kann direkt eine importierbare BO2026-Projektdatei erzeugt werden. Die Datei bleibt lokal im Browser.
+                <div class="raw"><input id="rawInput" type="file" accept="application/json,.json"><div class="raw-result" id="rawResult">RAW-JSON auswählen.</div></div>
+              </div>
+            </details>
+
+            <details class="subtle">
+              <summary>Erweiterte Hilfe & Browserpfade</summary>
+              <div class="subtle-body">
+                <strong>Chromium-Browser unter Windows</strong>
+                <div class="path">Chrome: %LOCALAPPDATA%\Google\Chrome\User Data\Default\Local Storage\leveldb</div>
+                <div class="path">Edge: %LOCALAPPDATA%\Microsoft\Edge\User Data\Default\Local Storage\leveldb</div>
+                <div class="path">Brave: %LOCALAPPDATA%\BraveSoftware\Brave-Browser\User Data\Default\Local Storage\leveldb</div>
+                <div class="path">Vivaldi: %LOCALAPPDATA%\Vivaldi\User Data\Default\Local Storage\leveldb</div>
+                <div class="path">Opera: %APPDATA%\Opera Software\Opera Stable\Local Storage\leveldb</div>
+                <p>Firefox und Safari werden vom Skript ebenfalls geprüft. Safari ist aufgrund wechselnder WebKit-Speicherorte <strong>Best Effort</strong>.</p>
+                <button class="btn secondary" id="copyPython">Python-Quelltext kopieren</button>
+              </div>
+            </details>
+
+            <p class="footer">BO2026 Emergency Recovery · modebrecht.github.io</p>
+          </main>
+
+          <script type="text/plain" id="recoveryPython">__RECOVERY_PY__</script>
+          <script>
+          const TARGETS={
+            vercel:{name:'Vercel',host:'bo2026.vercel.app',origin:'https://bo2026.vercel.app',otherName:'Render',other:'https://dev-bo2026.onrender.com/',exe:'https://github.com/modebrecht/modebrecht.github.io/releases/download/bo2026-recovery-latest/BO2026-Recovery-Vercel-Windows.exe',sha:'https://github.com/modebrecht/modebrecht.github.io/releases/download/bo2026-recovery-latest/BO2026-Recovery-Vercel-Windows.exe.sha256'},
+            render:{name:'Render',host:'dev-bo2026.onrender.com',origin:'https://dev-bo2026.onrender.com',otherName:'Vercel',other:'https://bo2026.vercel.app/',exe:'https://github.com/modebrecht/modebrecht.github.io/releases/download/bo2026-recovery-latest/BO2026-Recovery-Render-Windows.exe',sha:'https://github.com/modebrecht/modebrecht.github.io/releases/download/bo2026-recovery-latest/BO2026-Recovery-Render-Windows.exe.sha256'}
+          };
+          let source=null,device=null;
+          const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+          const basePy=$('#recoveryPython').textContent;
+          function pyFor(t){if(t==='vercel')return basePy;const a='HOST="bo2026.vercel.app"; ORIGIN="https://bo2026.vercel.app"; KIND="cv-cover-charm-dossier"; VERSION=1';const b='HOST="dev-bo2026.onrender.com"; ORIGIN="https://dev-bo2026.onrender.com"; KIND="cv-cover-charm-dossier"; VERSION=1';return basePy.replace(a,b)}
+          function downloadText(name,text,type='text/plain'){const b=new Blob([text],{type}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+          async function copyText(text,btn){try{await navigator.clipboard.writeText(text);const old=btn.textContent;btn.textContent='✓ Kopiert';setTimeout(()=>btn.textContent=old,900)}catch{}}
+          function choose(kind,value){const selector=kind==='source'?'[data-source]':'[data-device]';$$(selector).forEach(b=>b.classList.toggle('active',b.dataset[kind]===value));if(kind==='source'){source=value;device=null;$$('[data-device]').forEach(b=>b.classList.remove('active'));$('#devicePanel').classList.remove('hidden');$('#resultPanel').classList.add('hidden')}else{device=value;renderResult()}}
+          $$('[data-source]').forEach(b=>b.onclick=()=>choose('source',b.dataset.source));
+          $$('[data-device]').forEach(b=>b.onclick=()=>choose('device',b.dataset.device));
+          function route(t){return `<div class="route"><b>${t.name}</b><span class="arrow">→ Daten retten →</span><b>${t.otherName}</b><span>zum Weiterarbeiten</span></div>`}
+          function renderResult(){const t=TARGETS[source];if(!t||!device)return;let h=`<p class="step-label">3 · Rettung</p><h2>${t.name}-Daten von ${device==='windows'?'Windows':device==='mac'?'macOS':'Android'} retten</h2>${route(t)}`;
+            if(device==='windows')h+=`<div class="actions two"><a class="btn" href="${t.exe}">🪟 Recovery starten</a><a class="btn secondary" href="${t.sha}" target="_blank" rel="noopener">SHA-256</a></div><div class="checklist"><div class="check"><b>1</b><span>Desktop-Browser vollständig schließen.</span></div><div class="check"><b>2</b><span>EXE starten. Sie liest nur den Browser-Arbeitsstand von <code>${t.origin}</code>.</span></div><div class="check"><b>3</b><span>Auf dem Desktop entsteht <code>Bewerbungsdossier-RECOVERED-*.json</code>.</span></div><div class="check"><b>4</b><span>Danach die Projektdatei auf der funktionierenden Seite laden.</span></div></div><div class="actions" style="margin-top:14px"><a class="btn secondary" href="${t.other}" target="_blank" rel="noopener">${t.otherName} öffnen →</a></div><div class="notice">Die EXE ist noch nicht öffentlich code-signiert. Windows SmartScreen kann deshalb beim ersten Start warnen.</div>`;
+            if(device==='mac')h+=`<div class="actions"><button class="btn" id="macDownload">🍎 ${t.name}-Recovery laden</button></div><div class="checklist"><div class="check"><b>1</b><span>Browser vollständig schließen.</span></div><div class="check"><b>2</b><span>Einmalig den Install-Befehl im Terminal ausführen.</span></div></div><div class="cmd"><pre id="macInstall">python3 -m pip install "git+https://github.com/cclgroupltd/ccl_chromium_reader.git" python-snappy</pre><button class="copy" data-copy="#macInstall">⧉</button></div><div class="cmd"><pre id="macRun">python3 bo2026_recover.py</pre><button class="copy" data-copy="#macRun">⧉</button></div><div class="actions" style="margin-top:14px"><a class="btn secondary" href="${t.other}" target="_blank" rel="noopener">${t.otherName} öffnen →</a></div>`;
+            if(device==='android')h+=`<div class="notice"><strong>Chrome NICHT schließen</strong>, wenn der BO2026-Tab noch offen ist.</div><div class="checklist"><div class="check"><b>1</b><span>Android per USB mit PC/Mac verbinden und USB-Debugging aktivieren.</span></div><div class="check"><b>2</b><span>Auf dem Desktop Chrome öffnen: <code>chrome://inspect/#devices</code></span></div><div class="check"><b>3</b><span>BO2026-Tab → Inspect → Application → Local Storage → <code>${t.origin}</code>.</span></div></div><details class="subtle"><summary>Tab ist weg / Root?</summary><div class="subtle-body">Ohne Root gibt es nach geschlossenem Tab keinen verlässlichen Direktzugriff auf Chromes App-Sandbox. Mit Root liegt Chrome typischerweise unter <code>/data/user/0/com.android.chrome/</code>. Chrome nicht deinstallieren und keine App-Daten löschen.</div></details>`;
+            $('#result').innerHTML=h;$('#resultPanel').classList.remove('hidden');$('#resultPanel').scrollIntoView({behavior:'smooth',block:'nearest'});$('#macDownload')?.addEventListener('click',()=>downloadText('bo2026_recover.py',pyFor(source)));$$('[data-copy]').forEach(b=>b.onclick=()=>copyText($(b.dataset.copy).textContent,b));
+          }
+          $('#copyPython').onclick=e=>copyText(source?pyFor(source):basePy,e.currentTarget);
+          function J(s){try{const v=JSON.parse(s);return v&&typeof v==='object'&&!Array.isArray(v)?v:null}catch{return null}}
+          function projectFromItems(items){const p={kind:'cv-cover-charm-dossier',version:1,savedAt:new Date().toISOString()},cover=J(items['titelblatt:v3']),letter=J(items['anschreiben:v1']),cv0=J(items['lebenslauf:v1']),chrome=J(items['bewerbungsdossier:chrome:v1']);if(cover?.data&&typeof cover.data==='object')p.cover=cover;if(letter?.data&&typeof letter.data==='object')p.letter=letter;if(cv0?.data&&typeof cv0.data==='object'){let cv={...cv0},ps={},layout=items['lebenslauf:layout:v1'];if(['classic','modern','minimal','timeline','editorial'].includes(layout))ps.layout=layout;else if(layout==='executive')ps.layout='modern';if(items['lebenslauf:layout-mirror:v1']!=null)ps.mirrored=String(items['lebenslauf:layout-mirror:v1']).toLowerCase()==='true';const gap=Number(items['lebenslauf:section-gap:v1']);if(Number.isFinite(gap))ps.sectionGapMm=gap;[['placements','lebenslauf:placement:v1'],['photoStyle','lebenslauf:photo:v2'],['photoPlacement','lebenslauf:photo-place:v1']].forEach(([f,k])=>{const v=J(items[k]);if(v)ps[f]=v});if(Object.keys(ps).length)cv.portableState=ps;p.cv=cv}if(chrome)p.chrome=chrome;return(p.cover||p.letter||p.cv)?p:null}
+          $('#rawInput').onchange=async e=>{const f=e.target.files?.[0],out=$('#rawResult');if(!f)return;try{const parsed=JSON.parse(await f.text()),items=parsed.localStorage&&typeof parsed.localStorage==='object'?parsed.localStorage:parsed,project=projectFromItems(items);if(!project)throw new Error('Keine gültigen Dossierdaten gefunden');downloadText('Bewerbungsdossier-RECOVERED.json',JSON.stringify(project,null,2)+'\n','application/json');out.innerHTML='<span class="ok">✓ Importierbare Projektdatei erstellt.</span>'}catch(err){out.innerHTML='<span class="bad">✕ '+String(err.message||err)+'</span>'}finally{e.target.value=''}};
+          </script>
+          </body></html>'''
+
+          html = html.replace('__RECOVERY_PY__', recovery_py)
+          path.write_text(html, encoding='utf-8')
+          PY
+
+      - name: Commit simplified wizard
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bo2026-recovery.html
+          git commit -m "Simplify BO2026 recovery into source-first wizard [skip ci]"
+          git push
