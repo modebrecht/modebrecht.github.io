@@ -49,7 +49,7 @@
     .gradient{color:transparent;background:linear-gradient(110deg,var(--blue),var(--cyan) 54%,var(--green));-webkit-background-clip:text;background-clip:text}
     .subtitle{margin:0;max-width:660px;color:var(--muted);font-size:clamp(1rem,3.8vw,1.2rem);line-height:1.55;font-weight:500}
 
-    .grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+    .grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:620px}
     .project{
       --accent:var(--blue); position:relative;overflow:hidden;min-width:0;
       border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow);
@@ -102,7 +102,8 @@
     .mirrors[open] summary::after{transform:rotate(180deg)}
     .mirror-list{display:grid;gap:10px;padding-top:10px}
 
-    footer{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:24px;padding:13px 5px 0;color:var(--muted);font-size:.74rem}
+    footer{display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-top:28px;padding:13px 5px 0;color:var(--muted);font-size:.74rem}
+    .footer-links{display:flex;gap:14px;flex-wrap:wrap}
     footer a{color:inherit;text-decoration:none;font-weight:700}
 
     @media (min-width:700px){
@@ -113,7 +114,6 @@
       .priority-star{top:21px;right:21px}
     }
     @media (min-width:980px){
-      .grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}
       .project{width:100%}
     }
     @media (hover:hover) and (pointer:fine){
@@ -131,7 +131,7 @@
   <main class="shell">
     <header class="hero">
       <h1>One hub.<br><span class="gradient">Every project.</span></h1>
-      <p class="subtitle">BO · IB · WAH</p>
+      <p class="subtitle">BO 2026</p>
     </header>
 
     <section class="grid" aria-label="Project links">
@@ -152,35 +152,15 @@
         </div>
       </article>
 
-      <article class="project ib">
-        <div class="project-head">
-          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg></div>
-          <div class="project-copy"><h2>IB 2026</h2><p>Informatische Bildung</p></div>
-        </div>
-        <div class="links">
-          <a class="deploy" href="https://ib2026.vercel.app/" target="_blank" rel="noopener"><span class="host">V</span><span class="deploy-text"><span class="deploy-label">Vercel <span class="badge">Primary</span></span><span class="url">ib2026.vercel.app</span></span><span class="arrow" aria-hidden="true">↗</span></a>
-          <details class="mirrors">
-            <summary>Mirrors</summary>
-            <div class="mirror-list">
-              <a class="deploy" href="https://dev-ib2026.onrender.com/" target="_blank" rel="noopener"><span class="host">R</span><span class="deploy-text"><span class="deploy-label">Render <span class="badge">Dev mirror</span></span><span class="url">dev-ib2026.onrender.com</span></span><span class="arrow" aria-hidden="true">↗</span></a>
-              <a class="deploy" href="https://modebrecht.github.io/ib2026/" target="_blank" rel="noopener"><span class="host">GH</span><span class="deploy-text"><span class="deploy-label">GitHub Pages <span class="badge">Mirror</span></span><span class="url">modebrecht.github.io/ib2026</span></span><span class="arrow" aria-hidden="true">↗</span></a>
-            </div>
-          </details>
-        </div>
-      </article>
-
-      <article class="project wah">
-        <div class="project-head">
-          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a3 3 0 0 0 6 0V3M9 3v18M17 3v8M17 11c2.2 0 4-1.8 4-4V3M17 11v10"/></svg></div>
-          <div class="project-copy"><h2>WAH 2026</h2><p>Wirtschaft, Arbeit, Haushalt</p></div>
-        </div>
-        <div class="links">
-          <a class="deploy" href="https://wah2026.vercel.app/" target="_blank" rel="noopener"><span class="host">V</span><span class="deploy-text"><span class="deploy-label">Vercel <span class="badge">Primary</span></span><span class="url">wah2026.vercel.app</span></span><span class="arrow" aria-hidden="true">↗</span></a>
-        </div>
-      </article>
     </section>
 
-    <footer><span>modebrecht.github.io</span><a href="https://github.com/modebrecht" target="_blank" rel="noopener">GitHub ↗</a></footer>
+    <footer>
+      <span>© GSU</span>
+      <div class="footer-links">
+        <a href="https://ib2026.vercel.app/" target="_blank" rel="noopener">IB</a>
+        <a href="https://wah2026.vercel.app/" target="_blank" rel="noopener">WAH</a>
+      </div>
+    </footer>
   </main>
 </body>
 </html>
