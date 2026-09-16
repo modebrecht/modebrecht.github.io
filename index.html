@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b1020">
-  <meta name="description" content="Berufsorientierung 2026 — deployment, mirror and resources.">
+  <meta name="description" content="Berufliche Orientierung — Links und Ressourcen.">
   <title>Modebrecht · Project Hub</title>
   <style>
     :root {
@@ -102,12 +102,14 @@
     .mirrors[open] summary::after{transform:rotate(180deg)}
     .mirror-list{display:grid;gap:10px;padding-top:10px}
 
-    .resource-groups{display:grid;gap:10px;padding:2px 12px 14px}
-    .resource-group{padding:12px;border:1px solid var(--border);border-radius:16px;background:color-mix(in srgb,var(--surface2) 76%,transparent)}
-    .resource-title{margin:0 0 8px;color:var(--text);font-size:.78rem;font-weight:820;letter-spacing:.01em}
-    .resource-items{display:grid;gap:6px}
-    .resource-link{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:38px;padding:8px 10px;border-radius:11px;color:var(--text);text-decoration:none;background:color-mix(in srgb,var(--accent) 5%,transparent);font-size:.82rem;font-weight:690;-webkit-tap-highlight-color:transparent}
-    .resource-link span:last-child{color:var(--accent);font-size:.95rem}
+    .resource-groups{display:grid;gap:0;padding:0 18px 16px}
+    .resource-group{padding:14px 0;border-top:1px solid var(--border)}
+    .resource-group:first-child{border-top:0;padding-top:4px}
+    .resource-title{display:flex;align-items:center;gap:8px;margin:0 0 9px;color:var(--text);font-size:.76rem;font-weight:850;letter-spacing:.025em}
+    .resource-title::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 10%,transparent)}
+    .resource-items{display:flex;flex-wrap:wrap;gap:7px;padding-left:15px}
+    .resource-link{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:8px 11px;border:1px solid color-mix(in srgb,var(--accent) 15%,var(--border));border-radius:999px;color:var(--text);text-decoration:none;background:color-mix(in srgb,var(--surface2) 72%,transparent);font-size:.8rem;font-weight:700;-webkit-tap-highlight-color:transparent;transition:background .18s ease,border-color .18s ease,transform .18s ease}
+    .resource-link span:last-child{color:var(--accent);font-size:.88rem}
 
     footer{display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-top:28px;padding:13px 5px 0;color:var(--muted);font-size:.74rem}
     .footer-links{display:flex;gap:14px;flex-wrap:wrap}
@@ -127,7 +129,7 @@
       .project{transition:transform .24s ease,box-shadow .24s ease}.project:hover{transform:translateY(-3px);box-shadow:0 24px 72px rgba(33,57,116,.19)}
       .deploy:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 36%,var(--border));background:color-mix(in srgb,var(--accent) 7%,var(--surface2))}
       .mirrors summary:hover{color:var(--text);border-color:color-mix(in srgb,var(--accent) 38%,var(--border))}
-      .resource-link:hover{background:color-mix(in srgb,var(--accent) 11%,var(--surface2))}
+      .resource-link:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 34%,var(--border));background:color-mix(in srgb,var(--accent) 7%,var(--surface2))}
     }
     @media (prefers-reduced-motion:no-preference){
       .project{animation:rise .58s cubic-bezier(.2,.76,.28,1) both}.project:nth-child(2){animation-delay:.07s}
@@ -139,15 +141,14 @@
   <main class="shell">
     <header class="hero">
       <h1>One hub.<br><span class="gradient">Every project.</span></h1>
-      <p class="subtitle">Berufsorientierung 2026</p>
-    </header>
+          </header>
 
     <section class="grid" aria-label="Project links">
       <article class="project bo">
         <span class="priority-star" title="Aktuell relevant" aria-label="Aktuell relevant">★</span>
         <div class="project-head">
           <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7V5.8A2.8 2.8 0 0 1 10.8 3h2.4A2.8 2.8 0 0 1 16 5.8V7"/><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M3 12h18M9 12v2h6v-2"/></svg></div>
-          <div class="project-copy"><h2>Berufsorientierung 2026</h2><p>Berufliche Orientierung</p></div>
+          <div class="project-copy"><h2>Berufliche Orientierung</h2></div>
         </div>
         <div class="links">
           <a class="deploy" href="https://bo2026.vercel.app/" target="_blank" rel="noopener"><span class="host">V</span><span class="deploy-text"><span class="deploy-label">Vercel <span class="badge">Primary</span></span><span class="url">bo2026.vercel.app</span></span><span class="arrow" aria-hidden="true">↗</span></a>
@@ -163,7 +164,7 @@
       <article class="project resources">
         <div class="project-head">
           <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v15H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 6.5v15M8 8h8M8 12h6"/></svg></div>
-          <div class="project-copy"><h2>BO / EE / Ressourcen</h2><p>Externe Angebote &amp; Hilfsmittel</p></div>
+          <div class="project-copy"><h2>BO / EE / Ressourcen</h2></div>
         </div>
         <div class="resource-groups">
           <section class="resource-group" aria-label="Schnuppern">
