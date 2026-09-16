@@ -83,26 +83,34 @@
 
     .hero{
       width:100%;
-      max-width:760px;
+      max-width:860px;
       margin:0 auto;
-      padding:26px 0 34px;
+      padding:26px 0 30px;
       text-align:center;
     }
     h1{
       margin:0;
-      font-size:clamp(3rem,10vw,5.9rem);
       line-height:.91;
-      letter-spacing:-.067em;
+      letter-spacing:-.055em;
       font-weight:880;
     }
     .title-white{
       display:block;
-      color:var(--headline);
+      color:#fff;
+      font-size:clamp(3rem,9.2vw,5.45rem);
+    }
+    .title-row{
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      gap:clamp(9px,1.8vw,16px);
+      margin-top:.05em;
+      white-space:nowrap;
     }
     .title-gradient{
       display:block;
-      margin-top:.05em;
       color:transparent;
+      font-size:clamp(2.85rem,8.6vw,5.15rem);
       background:linear-gradient(105deg,var(--blue) 4%,var(--cyan) 48%,var(--green) 96%);
       -webkit-background-clip:text;
       background-clip:text;
@@ -111,14 +119,15 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      margin-top:18px;
-      min-height:34px;
-      padding:6px 13px;
+      flex:0 0 auto;
+      margin-bottom:.12em;
+      min-height:31px;
+      padding:5px 11px;
       border:1px solid var(--border);
       border-radius:999px;
       background:color-mix(in srgb,var(--surface-strong) 68%,transparent);
       color:var(--muted);
-      font-size:.86rem;
+      font-size:clamp(.68rem,1.6vw,.82rem);
       font-weight:800;
       letter-spacing:.12em;
     }
@@ -369,8 +378,14 @@
 
     @media (min-width:900px){
       .shell{padding-top:48px}
-      .hero{padding-top:22px;padding-bottom:48px}
-      h1{font-size:5.7rem}
+      .hero{padding-top:22px;padding-bottom:42px}
+    }
+
+    @media (max-width:420px){
+      .title-white{font-size:clamp(2.7rem,13vw,3.45rem)}
+      .title-gradient{font-size:clamp(2.45rem,11.8vw,3.2rem)}
+      .title-row{gap:8px}
+      .year{padding:4px 9px;min-height:28px;font-size:.64rem}
     }
 
     @media (hover:hover) and (pointer:fine){
@@ -403,9 +418,11 @@
     <header class="hero">
       <h1>
         <span class="title-white">Berufliche</span>
-        <span class="title-gradient">Orientierung</span>
+        <span class="title-row">
+          <span class="title-gradient">Orientierung</span>
+          <span class="year">2026</span>
+        </span>
       </h1>
-      <span class="year">2026</span>
     </header>
 
     <section class="content" aria-label="Berufliche Orientierung">
