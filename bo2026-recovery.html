@@ -20,16 +20,16 @@
     <p>Der BO2026-Arbeitsstand liegt im <strong>Browserprofil</strong>. Dieses Kit liest <strong>bo2026.vercel.app</strong> lokal aus und erzeugt neben einem Rohbackup jetzt auch direkt eine <strong>BO2026-importierbare Dossier-JSON</strong>.</p>
   </header>
 
-  <div class="alert"><div class="mark">!</div><div><h2>Browser zuerst komplett beenden.</h2><p>Das Desktop-Skript liest nur. Es verändert das Browserprofil nicht. Chrome Android ist ein Sonderfall – siehe unten.</p></div></div>
+  <div class="alert"><div class="mark">!</div><div><h2>Desktop schließen. Android-Tab offen lassen.</h2><p><strong>Desktop:</strong> Browser vor dem Profil-Scan vollständig beenden. <strong>Chrome Android:</strong> Wenn der BO2026-Tab noch offen ist, Chrome <strong>NICHT schließen</strong> – dieser Tab ist ohne Root deine beste Rettungsmöglichkeit.</p></div></div>
 
   <section class="steps">
-    <div class="step"><b>1</b><div><h3>Browser schließen</h3><p>Chrome, Edge, Brave, Vivaldi, Opera, Firefox oder Safari vollständig beenden.</p></div></div>
+    <div class="step"><b>1</b><div><h3>Desktop-Browser schließen</h3><p>Chrome, Edge, Brave, Vivaldi, Opera, Firefox oder Safari am PC/Mac vollständig beenden. Auf Android einen noch offenen BO2026-Tab dagegen offen lassen.</p></div></div>
     <div class="step"><b>2</b><div><h3>Recovery starten</h3><p>Das Skript durchsucht die üblichen Profile nach dem BO2026-Origin.</p></div></div>
     <div class="step"><b>3</b><div><h3>Projekt laden</h3><p><code>Bewerbungsdossier-RECOVERED-*.json</code> danach in BO2026 über „Projekt laden“ öffnen.</p></div></div>
   </section>
 
   <section class="card">
-    <div class="card-head"><div><h2>Universal BO2026 Recovery</h2><p>Chrome · Edge · Brave · Vivaldi · Opera / Opera GX · Firefox · Safari</p></div><span class="pill">Recommended</span></div>
+    <div class="card-head"><div><h2>Universal BO2026 Recovery</h2><p>Chrome · Edge · Brave · Vivaldi · Opera / Opera GX · Firefox · Safari (Best Effort)</p></div><span class="pill">Recommended</span></div>
     <div class="body">
       <div class="actions"><button class="btn" id="downloadScript">↓ bo2026_recover.py herunterladen</button><button class="btn secondary" id="copyScript">⧉ Python-Skript kopieren</button></div>
       <div class="install">
@@ -54,7 +54,7 @@
     <details class="browser"><summary>Vivaldi</summary><div class="browser-body"><div class="os"><h3>Windows</h3><div class="path"><span>%LOCALAPPDATA%\Vivaldi\User Data\Default\Local Storage\leveldb</span><button>Copy</button></div></div><div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/Vivaldi/Default/Local Storage/leveldb</span><button>Copy</button></div></div></div></details>
     <details class="browser"><summary>Opera / Opera GX</summary><div class="browser-body"><div class="os"><h3>Windows</h3><div class="path"><span>%APPDATA%\Opera Software\Opera Stable\Local Storage\leveldb</span><button>Copy</button></div><div class="path"><span>%APPDATA%\Opera Software\Opera GX Stable\Local Storage\leveldb</span><button>Copy</button></div></div><div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/com.operasoftware.Opera/Local Storage/leveldb</span><button>Copy</button></div><div class="path"><span>~/Library/Application Support/com.operasoftware.OperaGX/Local Storage/leveldb</span><button>Copy</button></div></div></div></details>
     <details class="browser"><summary>Firefox</summary><div class="browser-body"><div class="os"><h3>Windows</h3><div class="path"><span>%APPDATA%\Mozilla\Firefox\Profiles\&lt;profil&gt;\storage\default\https+++bo2026.vercel.app\ls\data.sqlite</span><button>Copy</button></div></div><div class="os"><h3>macOS</h3><div class="path"><span>~/Library/Application Support/Firefox/Profiles/&lt;profil&gt;/storage/default/https+++bo2026.vercel.app/ls/data.sqlite</span><button>Copy</button></div></div><p class="note">Snappy-komprimierte Firefox-Werte werden vom Recovery-Skript berücksichtigt.</p></div></details>
-    <details class="browser"><summary>Safari</summary><div class="browser-body"><div class="os"><h3>macOS · aktuell</h3><div class="path"><span>~/Library/Containers/com.apple.Safari/Data/Library/WebKit/WebsiteData/</span><button>Copy</button></div><p class="note">Falls macOS blockiert: Terminal unter Datenschutz &amp; Sicherheit → Festplattenvollzugriff freigeben.</p></div><div class="os"><h3>Windows · Legacy Safari</h3><div class="path"><span>%APPDATA%\Apple Computer\Safari\LocalStorage</span><button>Copy</button></div><p class="note"><span class="warn">Nur Altbestand:</span> Safari für Windows wird seit Jahren nicht mehr weiterentwickelt.</p></div></div></details>
+    <details class="browser"><summary>Safari · Best Effort</summary><div class="browser-body"><p class="note"><span class="warn">Best Effort:</span> Safari/WebKit-Speicherorte können je nach macOS-, Safari- und Profilversion variieren. Das Skript prüft mehrere bekannte Speicherorte, eine Rettung kann aber weniger zuverlässig sein als bei Chromium/Firefox.</p><div class="os"><h3>macOS · aktuell</h3><div class="path"><span>~/Library/Containers/com.apple.Safari/Data/Library/WebKit/WebsiteData/</span><button>Copy</button></div><p class="note">Falls macOS blockiert: Terminal unter Datenschutz &amp; Sicherheit → Festplattenvollzugriff freigeben.</p></div><div class="os"><h3>Windows · Legacy Safari</h3><div class="path"><span>%APPDATA%\Apple Computer\Safari\LocalStorage</span><button>Copy</button></div><p class="note"><span class="warn">Nur Altbestand:</span> Safari für Windows wird seit Jahren nicht mehr weiterentwickelt.</p></div></div></details>
   </section>
 
   <h2 class="section-title">Chrome Android</h2>
