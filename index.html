@@ -42,32 +42,51 @@
       padding:max(26px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(36px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));
     }
 
+    .settings{position:absolute;z-index:20;top:max(18px,env(safe-area-inset-top));right:max(18px,env(safe-area-inset-right))}
+    .settings-btn{
+      width:42px;height:42px;display:grid;place-items:center;padding:0;border:1px solid var(--border);border-radius:14px;
+      background:color-mix(in srgb,var(--surface-strong) 84%,transparent);color:var(--muted);box-shadow:0 12px 34px rgba(8,16,31,.12);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);cursor:pointer;-webkit-tap-highlight-color:transparent;
+      transition:transform .18s ease,color .18s ease,border-color .18s ease,background .18s ease;
+    }
+    .settings-btn svg{width:20px;height:20px;stroke-width:1.9}
+    .settings-btn:active{transform:scale(.96)}
+    .settings-panel{
+      position:absolute;right:0;top:50px;width:min(250px,calc(100vw - 36px));padding:12px;border:1px solid var(--border);border-radius:18px;
+      background:color-mix(in srgb,var(--surface-strong) 96%,transparent);box-shadow:0 20px 60px rgba(8,16,31,.2);
+      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);opacity:0;visibility:hidden;transform:translateY(-6px) scale(.98);
+      transform-origin:top right;transition:opacity .16s ease,visibility .16s ease,transform .16s ease;
+    }
+    .settings.open .settings-panel{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
+    .setting-row{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:46px;padding:4px 2px}
+    .setting-copy{min-width:0}
+    .setting-title{display:block;font-size:.86rem;font-weight:800;letter-spacing:-.01em}
+    .setting-sub{display:block;margin-top:2px;color:var(--muted);font-size:.68rem;line-height:1.25}
+    .switch{position:relative;display:inline-flex;flex:0 0 auto;width:42px;height:24px}
+    .switch input{position:absolute;opacity:0;pointer-events:none}
+    .switch-track{position:absolute;inset:0;border-radius:999px;background:color-mix(in srgb,var(--muted) 22%,transparent);border:1px solid var(--border);transition:background .18s ease,border-color .18s ease}
+    .switch-track::after{content:"";position:absolute;width:18px;height:18px;left:2px;top:2px;border-radius:50%;background:var(--surface-strong);box-shadow:0 2px 8px rgba(0,0,0,.18);transition:transform .18s ease}
+    .switch input:checked + .switch-track{background:var(--blue);border-color:transparent}
+    .switch input:checked + .switch-track::after{transform:translateX(18px)}
+    .switch input:focus-visible + .switch-track{outline:2px solid var(--cyan);outline-offset:3px}
+
     /* Center only the two-line title. The year badge is visually attached, but must not shift the title midpoint. */
     .hero{width:100%;margin:0 auto;padding:28px 0 34px;display:flex;justify-content:center;overflow:visible}
     .hero-title{
       position:relative;width:max-content;max-width:100%;margin:0;display:flex;flex-direction:column;align-items:flex-start;
       text-align:left;font-weight:880;letter-spacing:-.045em;overflow:visible;
     }
-    .title-white{
-      display:block;color:#fff;font-size:clamp(3rem,8.2vw,5.05rem);line-height:1;
-    }
-    .title-row{
-      position:relative;display:block;width:max-content;max-width:100%;white-space:nowrap;overflow:visible;margin-top:.02em;
-    }
+    .title-white{display:block;color:#fff;font-size:clamp(3rem,8.2vw,5.05rem);line-height:1}
+    .title-row{position:relative;display:block;width:max-content;max-width:100%;white-space:nowrap;overflow:visible;margin-top:.02em}
     .title-gradient{
-      display:block;color:transparent;font-size:clamp(2.85rem,7.8vw,4.8rem);
-      line-height:1.14;padding:0 .04em .12em 0;
-      background:linear-gradient(105deg,var(--blue) 4%,var(--cyan) 48%,var(--green) 96%);
-      -webkit-background-clip:text;background-clip:text;overflow:visible;
+      display:block;color:transparent;font-size:clamp(2.85rem,7.8vw,4.8rem);line-height:1.14;padding:0 .04em .12em 0;
+      background:linear-gradient(105deg,var(--blue) 4%,var(--cyan) 48%,var(--green) 96%);-webkit-background-clip:text;background-clip:text;overflow:visible;
     }
     .year{
-      position:absolute;left:calc(100% + clamp(6px,1vw,10px));top:56%;
-      display:inline-flex;align-items:center;justify-content:center;
+      position:absolute;left:calc(100% + clamp(6px,1vw,10px));top:56%;display:inline-flex;align-items:center;justify-content:center;
       min-height:31px;padding:5px 11px;border:1px solid var(--border);border-radius:999px;
       background:color-mix(in srgb,var(--surface-strong) 68%,transparent);color:var(--muted);
-      font-size:clamp(.68rem,1.5vw,.82rem);font-weight:800;letter-spacing:.12em;
-      transform:translateY(-50%);
-      box-shadow:0 10px 26px rgba(8,16,31,.12);
+      font-size:clamp(.68rem,1.5vw,.82rem);font-weight:800;letter-spacing:.12em;transform:translateY(-50%);box-shadow:0 10px 26px rgba(8,16,31,.12);
     }
 
     .content{display:grid;gap:18px;width:100%;max-width:700px;margin:0 auto}
@@ -94,21 +113,13 @@
     }
     .deploy:active{transform:scale(.985)}
     .host{width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;border-radius:12px;background:color-mix(in srgb,var(--accent) 11%,var(--surface));color:var(--accent);font-size:.72rem;font-weight:850}
-    .mirrors summary .host{width:34px;height:34px;border-radius:11px}
     .deploy-text{min-width:0;flex:1}
     .deploy-label{display:flex;align-items:center;gap:7px;margin-bottom:3px;font-size:.9rem;font-weight:780}
     .badge{display:inline-flex;align-items:center;min-height:19px;padding:2px 7px;border-radius:999px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);font-size:.59rem;font-weight:850;letter-spacing:.055em;text-transform:uppercase;white-space:nowrap}
     .url{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:.77rem}
-    .arrow{display:grid;place-items:center;flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);font-size:1.05rem;transition:transform .18s ease}
-    .mirrors{margin-top:1px}
-    .mirrors summary{
-      list-style:none;display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 11px 8px 12px;cursor:pointer;
-      color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);background:color-mix(in srgb,var(--surface-strong) 84%,transparent);
-      transition:transform .18s ease,border-color .18s ease,background .18s ease;-webkit-tap-highlight-color:transparent;
-    }
-    .mirrors summary::-webkit-details-marker{display:none}
-    .mirrors[open] summary .arrow{transform:rotate(180deg)}
-    .mirror-list{display:grid;gap:10px;padding-top:10px}
+    .arrow{display:grid;place-items:center;flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);font-size:1.05rem}
+    .mirror-deploy{display:none}
+    body.show-mirrors .mirror-deploy{display:flex}
     .resource-groups{display:grid;gap:0;padding:0 18px 16px}
     .resource-group{padding:14px 0;border-top:1px solid var(--border)}
     .resource-group:first-child{border-top:0;padding-top:4px}
@@ -124,7 +135,7 @@
     footer{display:flex;align-items:center;justify-content:center;margin:28px auto 0;padding:16px 6px 0;color:var(--muted);font-size:.7rem;text-align:center;font-weight:760;letter-spacing:.08em}
 
     @media (min-width:620px){
-      .shell{padding-inline:28px}.hero{padding-top:44px;padding-bottom:44px}.content{gap:20px}
+      .shell{padding-inline:28px}.settings{right:28px}.hero{padding-top:44px;padding-bottom:44px}.content{gap:20px}
       .project-head{padding:24px 24px 17px}.links{padding:2px 16px 16px}.resource-groups{padding-inline:22px;padding-bottom:20px}
     }
     @media (min-width:900px){.shell{padding-top:48px}.hero{padding-top:22px;padding-bottom:42px}}
@@ -132,11 +143,12 @@
       .title-white{font-size:clamp(2.65rem,13vw,3.45rem)}
       .title-gradient{font-size:clamp(2.28rem,10.7vw,3rem);line-height:1.16;padding-bottom:.14em}
       .year{left:calc(100% + 6px);top:54%;padding:4px 8px;min-height:27px;font-size:.6rem}
-      .mirrors summary{min-height:50px;padding:7px 9px 7px 10px}
+      .settings-btn{width:40px;height:40px;border-radius:13px}.settings-panel{top:47px}
     }
     @media (hover:hover) and (pointer:fine){
       .project{transition:transform .24s ease,box-shadow .24s ease}.project:hover{transform:translateY(-2px);box-shadow:0 24px 72px rgba(33,57,116,.18)}
-      .deploy:hover,.mirrors summary:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 36%,var(--border));background:color-mix(in srgb,var(--accent) 6%,var(--surface-strong))}
+      .deploy:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 36%,var(--border));background:color-mix(in srgb,var(--accent) 6%,var(--surface-strong))}
+      .settings-btn:hover{color:var(--text);border-color:color-mix(in srgb,var(--blue) 34%,var(--border));background:color-mix(in srgb,var(--blue) 6%,var(--surface-strong))}
       .resource-link:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 34%,var(--border));background:color-mix(in srgb,var(--accent) 7%,var(--surface-strong))}
     }
     @media (prefers-reduced-motion:no-preference){
@@ -148,6 +160,23 @@
 </head>
 <body>
   <main class="shell">
+    <div class="settings" id="settings">
+      <button class="settings-btn" id="settingsBtn" type="button" aria-label="Einstellungen" aria-expanded="false" aria-controls="settingsPanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.1a1.7 1.7 0 0 0-.4-1.1 1.7 1.7 0 0 0-1-.6 1.7 1.7 0 0 0-1.88.34l-.06.06-2.86-2.86.06-.06A1.7 1.7 0 0 0 3.8 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H2V9.6h.1a1.7 1.7 0 0 0 1.1-.4 1.7 1.7 0 0 0 .6-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06L6.26 3.4l.06.06A1.7 1.7 0 0 0 8.2 3.8a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V2h4v.1a1.7 1.7 0 0 0 .4 1.1 1.7 1.7 0 0 0 1 .6 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 8.2a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.1.4h.1v4h-.1a1.7 1.7 0 0 0-1.1.4 1.7 1.7 0 0 0-.6 1Z"/>
+        </svg>
+      </button>
+      <div class="settings-panel" id="settingsPanel" role="dialog" aria-label="Einstellungen">
+        <div class="setting-row">
+          <span class="setting-copy"><span class="setting-title">Mirrors anzeigen</span><span class="setting-sub">Netlify und DEV einblenden</span></span>
+          <label class="switch" aria-label="Mirrors anzeigen">
+            <input id="mirrorToggle" type="checkbox">
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
     <header class="hero">
       <h1 class="hero-title" aria-label="Berufliche Orientierung 2026">
         <span class="title-white">Berufliche</span>
@@ -163,9 +192,7 @@
         <div class="project-head">
           <div class="icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8 7V5.8A2.8 2.8 0 0 1 10.8 3h2.4A2.8 2.8 0 0 1 16 5.8V7"/>
-              <rect x="3" y="7" width="18" height="13" rx="3"/>
-              <path d="M3 12h18M9 12v2h6v-2"/>
+              <path d="M8 7V5.8A2.8 2.8 0 0 1 10.8 3h2.4A2.8 2.8 0 0 1 16 5.8V7"/><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M3 12h18M9 12v2h6v-2"/>
             </svg>
           </div>
           <div class="project-copy">
@@ -179,30 +206,23 @@
             <span class="deploy-text"><span class="deploy-label">Vercel <span class="badge">Primary</span></span><span class="url">bo2026.vercel.app</span></span>
             <span class="arrow" aria-hidden="true">↗</span>
           </a>
-          <details class="mirrors">
-            <summary>
-              <span class="host">M</span>
-              <span class="deploy-text"><span class="deploy-label">Mirror <span class="badge">Backup</span></span><span class="url">Render anzeigen</span></span>
-              <span class="arrow" aria-hidden="true">⌄</span>
-            </summary>
-            <div class="mirror-list">
-              <a class="deploy" href="https://dev-bo2026.onrender.com/" target="_blank" rel="noopener">
-                <span class="host">R</span>
-                <span class="deploy-text"><span class="deploy-label">Render <span class="badge">Mirror</span></span><span class="url">dev-bo2026.onrender.com</span></span>
-                <span class="arrow" aria-hidden="true">↗</span>
-              </a>
-            </div>
-          </details>
+          <a class="deploy mirror-deploy" href="https://bo2026.netlify.app/" target="_blank" rel="noopener">
+            <span class="host">N</span>
+            <span class="deploy-text"><span class="deploy-label">Netlify <span class="badge">Mirror</span></span><span class="url">bo2026.netlify.app</span></span>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+          <a class="deploy mirror-deploy" href="https://dev-bo2026.onrender.com/" target="_blank" rel="noopener">
+            <span class="host">R</span>
+            <span class="deploy-text"><span class="deploy-label">Render <span class="badge">DEV</span></span><span class="url">dev-bo2026.onrender.com</span></span>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
         </div>
       </article>
 
       <article class="project resources">
         <div class="project-head">
           <div class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v15H6.5A2.5 2.5 0 0 0 4 21.5z"/>
-              <path d="M4 6.5v15M8 8h8M8 12h6"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v15H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 6.5v15M8 8h8M8 12h6"/></svg>
           </div>
           <div class="project-copy"><h2>BO / EE</h2><p>Wichtige Ressourcen</p></div>
         </div>
@@ -223,20 +243,54 @@
           </section>
           <section class="resource-group" aria-label="Lehrstelle finden">
             <h3 class="resource-title">Lehrstelle finden</h3>
-            <div class="resource-items">
-              <a class="resource-link" href="https://www.berufsberatung.ch/de/lehrstelle-suchen" target="_blank" rel="noopener"><span>LENA · offene Lehrstellen</span><span aria-hidden="true">↗</span></a>
-            </div>
+            <div class="resource-items"><a class="resource-link" href="https://www.berufsberatung.ch/de/lehrstelle-suchen" target="_blank" rel="noopener"><span>LENA · offene Lehrstellen</span><span aria-hidden="true">↗</span></a></div>
           </section>
           <section class="resource-group" aria-label="Region Solothurn">
             <h3 class="resource-title">Region Solothurn</h3>
-            <div class="resource-items">
-              <a class="resource-link" href="https://so.ch/verwaltung/departement-fuer-bildung-kultur-und-sport/amt-fuer-berufsbildung-mittel-und-hochschulen/berufs-studien-und-laufbahnberatung/unser-angebot/beratung/berufsberatung/schnupperlehrstellen-oder-offene-lehrstellen-suchen/" target="_blank" rel="noopener"><span>BIZ Solothurn</span><span aria-hidden="true">↗</span></a>
-            </div>
+            <div class="resource-items"><a class="resource-link" href="https://so.ch/verwaltung/departement-fuer-bildung-kultur-und-sport/amt-fuer-berufsbildung-mittel-und-hochschulen/berufs-studien-und-laufbahnberatung/unser-angebot/beratung/berufsberatung/schnupperlehrstellen-oder-offene-lehrstellen-suchen/" target="_blank" rel="noopener"><span>BIZ Solothurn</span><span aria-hidden="true">↗</span></a></div>
           </section>
         </div>
       </article>
     </section>
     <footer>© GSU</footer>
   </main>
+
+  <script>
+    (()=>{
+      const settings=document.getElementById('settings');
+      const button=document.getElementById('settingsBtn');
+      const toggle=document.getElementById('mirrorToggle');
+      const key='bo-show-mirrors';
+      let show=false;
+      try{show=localStorage.getItem(key)==='1'}catch(e){}
+      const apply=()=>{
+        document.body.classList.toggle('show-mirrors',show);
+        toggle.checked=show;
+      };
+      apply();
+      button.addEventListener('click',()=>{
+        const open=settings.classList.toggle('open');
+        button.setAttribute('aria-expanded',String(open));
+      });
+      toggle.addEventListener('change',()=>{
+        show=toggle.checked;
+        apply();
+        try{localStorage.setItem(key,show?'1':'0')}catch(e){}
+      });
+      document.addEventListener('click',e=>{
+        if(!settings.contains(e.target)){
+          settings.classList.remove('open');
+          button.setAttribute('aria-expanded','false');
+        }
+      });
+      document.addEventListener('keydown',e=>{
+        if(e.key==='Escape'){
+          settings.classList.remove('open');
+          button.setAttribute('aria-expanded','false');
+          button.focus();
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
