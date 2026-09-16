@@ -1,0 +1,52 @@
+name: Patch Unified BO2026 EXE
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/patch-unified-bo2026-exe.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Patch recovery page
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('bo2026-recovery.html')
+          html = path.read_text(encoding='utf-8')
+
+          replacements = {
+              'BO2026-Recovery-Vercel-Windows.exe.sha256': 'BO2026-Recovery-Windows.exe.sha256',
+              'BO2026-Recovery-Render-Windows.exe.sha256': 'BO2026-Recovery-Windows.exe.sha256',
+              'BO2026-Recovery-Vercel-Windows.exe': 'BO2026-Recovery-Windows.exe',
+              'BO2026-Recovery-Render-Windows.exe': 'BO2026-Recovery-Windows.exe',
+              '<a class="btn" href="${t.exe}">🪟 Recovery starten</a>': '<a class="btn" href="${t.exe}">🪟 BO2026 Recovery starten</a>',
+              '<div class="check"><b>2</b><span>EXE starten. Sie liest nur den Browser-Arbeitsstand von <code>${t.origin}</code>.</span></div>': '<div class="check"><b>2</b><span>EXE starten und <strong>Vercel</strong>, <strong>Render</strong> oder <strong>Beide</strong> wählen. <strong>Enter = Beide</strong> (empfohlen).</span></div>',
+              '<div class="notice">Die EXE ist noch nicht öffentlich code-signiert. Windows SmartScreen kann deshalb beim ersten Start warnen.</div>': '<div class="notice">Die Windows-EXE ist für beide Domains identisch und fragt die Quelle beim Start nochmals ab. So kannst du bei Unsicherheit einfach <strong>Beide</strong> durchsuchen. Die EXE ist noch nicht öffentlich code-signiert; Windows SmartScreen kann deshalb beim ersten Start warnen.</div>',
+          }
+
+          for old, new in replacements.items():
+              if old not in html:
+                  raise SystemExit(f'marker not found: {old[:80]}')
+              html = html.replace(old, new)
+
+          path.write_text(html, encoding='utf-8')
+          PY
+
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bo2026-recovery.html
+          git commit -m "Use one selectable BO2026 Windows recovery EXE [skip ci]"
+          git push
