@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b1020">
-  <meta name="description" content="Modebrecht project hub — BO, IB and WAH deployments and mirrors.">
+  <meta name="description" content="Berufsorientierung 2026 — deployment, mirror and resources.">
   <title>Modebrecht · Project Hub</title>
   <style>
     :root {
@@ -56,7 +56,7 @@
       backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);isolation:isolate;
     }
     .project::after{content:"";position:absolute;width:180px;height:180px;right:-88px;top:-94px;border-radius:50%;background:var(--accent);opacity:.11;z-index:-1}
-    .bo{--accent:var(--blue)} .ib{--accent:var(--cyan)} .wah{--accent:var(--orange)}
+    .bo{--accent:var(--blue)} .resources{--accent:var(--green)}
 
     .project-head{display:flex;align-items:flex-start;gap:14px;padding:20px 20px 14px;min-height:84px}
     .bo .project-head{padding-right:76px}
@@ -122,7 +122,7 @@
       .mirrors summary:hover{color:var(--text);border-color:color-mix(in srgb,var(--accent) 38%,var(--border))}
     }
     @media (prefers-reduced-motion:no-preference){
-      .project{animation:rise .58s cubic-bezier(.2,.76,.28,1) both}.project:nth-child(2){animation-delay:.07s}.project:nth-child(3){animation-delay:.14s}
+      .project{animation:rise .58s cubic-bezier(.2,.76,.28,1) both}.project:nth-child(2){animation-delay:.07s}
       @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     }
   </style>
@@ -131,7 +131,7 @@
   <main class="shell">
     <header class="hero">
       <h1>One hub.<br><span class="gradient">Every project.</span></h1>
-      <p class="subtitle">BO 2026</p>
+      <p class="subtitle">Berufsorientierung 2026</p>
     </header>
 
     <section class="grid" aria-label="Project links">
@@ -139,7 +139,7 @@
         <span class="priority-star" title="Aktuell relevant" aria-label="Aktuell relevant">★</span>
         <div class="project-head">
           <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7V5.8A2.8 2.8 0 0 1 10.8 3h2.4A2.8 2.8 0 0 1 16 5.8V7"/><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M3 12h18M9 12v2h6v-2"/></svg></div>
-          <div class="project-copy"><h2>BO 2026</h2><p>Berufliche Orientierung</p></div>
+          <div class="project-copy"><h2>Berufsorientierung 2026</h2><p>Berufliche Orientierung</p></div>
         </div>
         <div class="links">
           <a class="deploy" href="https://bo2026.vercel.app/" target="_blank" rel="noopener"><span class="host">V</span><span class="deploy-text"><span class="deploy-label">Vercel <span class="badge">Primary</span></span><span class="url">bo2026.vercel.app</span></span><span class="arrow" aria-hidden="true">↗</span></a>
@@ -152,6 +152,15 @@
         </div>
       </article>
 
+      <article class="project resources">
+        <div class="project-head">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v15H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 6.5v15M8 8h8M8 12h6"/></svg></div>
+          <div class="project-copy"><h2>BO / EE / Ressourcen</h2><p>Externe Angebote &amp; Hilfsmittel</p></div>
+        </div>
+        <div class="links">
+          <a class="deploy" href="https://schnuppy.ch/" target="_blank" rel="noopener"><span class="host">S</span><span class="deploy-text"><span class="deploy-label">Schnuppy.ch <span class="badge">Ressource</span></span><span class="url">schnuppy.ch</span></span><span class="arrow" aria-hidden="true">↗</span></a>
+        </div>
+      </article>
     </section>
 
     <footer>
