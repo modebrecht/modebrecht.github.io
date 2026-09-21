@@ -123,6 +123,7 @@
 
   <script>(()=>{
     const settings=document.getElementById('settings'),button=document.getElementById('settingsBtn'),panel=document.getElementById('settingsPanel'),mirrorToggle=document.getElementById('mirrorToggle'),langToggle=document.getElementById('langToggle'),mirrorLabel=document.getElementById('mirrorLabel'),zoomRange=document.getElementById('zoomRange'),zoomValue=document.getElementById('zoomValue'),resetZoom=document.getElementById('resetZoom'),fileTypesHelp=document.getElementById('fileTypesHelp'),fileTypesDone=document.getElementById('fileTypesDone'),fileQuiz=document.getElementById('fileQuiz'),quizClose=document.getElementById('quizClose'),quizSubmit=document.getElementById('quizSubmit'),quizStatus=document.getElementById('quizStatus');
+    const fileTypesSummary=fileTypesHelp.querySelector('summary');
     const quizOptions=[...document.querySelectorAll('.quiz-option')],quizQuestions=[...document.querySelectorAll('.quiz-question')];
     const mirrorKey='bo-show-mirrors',langKey='bo-language',zoomKey='bo-zoom',fileTypesKey='bo-file-types-quiz-v1',confettiKey='bo-file-types-confetti-v1';
     const copy={
@@ -142,6 +143,7 @@
     const evaluateQuiz=()=>{const t=copy[lang];let allCorrect=true;quizOptions.forEach(option=>{option.querySelector('.quiz-answer-badge')?.remove();const input=option.querySelector('input'),expected=option.dataset.correct==='true',correct=input.checked===expected;option.classList.toggle('is-correct',correct);option.classList.toggle('is-wrong',!correct);const badge=document.createElement('span');badge.className='quiz-answer-badge';badge.textContent=correct?t.quizRight:t.quizWrong;option.appendChild(badge);if(!correct)allCorrect=false});quizQuestions.forEach(q=>{const wrong=!!q.querySelector('.quiz-option.is-wrong');q.classList.toggle('question-wrong',wrong);q.classList.toggle('question-correct',!wrong)});if(!allCorrect){quizStatus.textContent=t.quizTryAgain;quizStatus.className='quiz-status retry';quizSubmit.textContent=t.quizRetry;return}fileTypesRead=true;try{localStorage.setItem(fileTypesKey,'1')}catch(e){};applyCompletionState();quizStatus.textContent=t.quizSuccess;quizStatus.className='quiz-status success';quizSubmit.textContent=t.fileTypesDoneComplete;quizSubmit.disabled=true;launchConfetti();setTimeout(()=>{if(fileQuiz.open)fileQuiz.close();fileTypesHelp.open=false;fileTypesHelp.querySelector('summary').focus()},1100)};
     if(fileTypesRead)fileTypesHelp.open=false;
     applyMirrors();applyZoom();applyLanguage();
+    fileTypesSummary.addEventListener('click',e=>{if(!fileTypesRead)e.preventDefault()});
     button.addEventListener('click',()=>{const open=settings.classList.toggle('open');button.setAttribute('aria-expanded',String(open))});
     mirrorToggle.addEventListener('change',()=>{show=mirrorToggle.checked;applyMirrors();try{localStorage.setItem(mirrorKey,show?'1':'0')}catch(e){}});
     langToggle.addEventListener('change',()=>{lang=langToggle.checked?'en':'de';applyLanguage();clearQuizFeedback(false);try{localStorage.setItem(langKey,lang)}catch(e){}});
